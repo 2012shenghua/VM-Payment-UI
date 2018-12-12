@@ -1,0 +1,33 @@
+.trigger {
+  color: #1890ff;
+  font-size: 18px;
+  line-height: 64px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: color .3s;
+}
+
+.logo {
+  height: 32px;
+  background: rgba(255, 255, 255, .2);
+  margin: 16px;
+}
+
+.login{
+  background: #f0f2f5;
+  height: 100%;
+  width: 100%;
+}
+
+:global {
+  (html, body) {
+    height: 100%;
+    color: '#ccc';
+  }
+  .ant-layout-has-sider{
+    height: 100%;
+  }
+
+
+}
+

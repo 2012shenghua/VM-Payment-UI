@@ -1,0 +1,9 @@
+{
+    "extends": "umi",
+    "globals": {
+        "document": false,
+        "navigator": false,
+        "window": false,
+        "node": false
+    },
+}
