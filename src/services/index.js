@@ -3,10 +3,13 @@ import {Modal} from 'antd'
 // import {CasServerUrl, JavaServerHost} from "../common/const/config";
 
 //携带cookie
-axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = false;
 
 const className = 'charles-not-login-modal';
-
+const head_app = {
+  'X-Kii-AppID' : '3xr2fxuy9lpn',
+  'X-Kii-AppKey': '0212b3b2780a44dabf99b8e72ea8dd6c'
+}
 axios.interceptors.request.use(config => {
   return config;
 }, err => {
@@ -69,47 +72,35 @@ export const ContentType = {
   FORM: 'application/x-www-form-urlencoded'
 };
 
-export const postRequest = (url, params, contentType = ContentType.FORM) => {
+export const postRequest = (url, params, header) => {
   return axios({
     method: "post",
     url: url,
-    headers: {
-      'Content-type': contentType
-    },
-    params,
-    transformRequest: [function (data) {
-      let ret = ''
-      for (let it in data) {
-        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-      }
-      return ret
-    }],
+    headers: header,
+    params: params,
   })
 }
 
-export const sendGetRequest = (url, headers, params) => {
+
+export const getRequest = (url, params, header_params) => {
+  const header = {
+    ...head_app,
+    ...header_params
+  }
   return axios({
     method: "get",
-    url: url,
-    headers,
+    url,
+    headers: header,
     params,
-    transformRequest: [function (data) {
-      let ret = ''
-      for (let it in data) {
-        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-      }
-      return ret
-    }],
   })
 }
 
-export const getRequest = (url, params = {}) => {
-  console.log(url)
+export const sendGetRequest  = (url, params = {}) => {
   return axios.get(`${url}`, { params })
 }
 
-export const postRequestPre = (url, params) => {
-  return axios.post(`${url}`, params )
+export const postRequestPre = (url, params, header) => {
+  return axios.post(`${url}`, params, header )
 }
 
 export const patchRequestPre = (url, params, contentType = ContentType.FORM) => {
@@ -129,3 +120,12 @@ export const patchRequestPre = (url, params, contentType = ContentType.FORM) => 
     }],
   })
 }
+
+export const sendPost = (url, params, headers) => {
+  return axios.post(url, params,
+    {
+        headers
+    }
+  )
+}
+

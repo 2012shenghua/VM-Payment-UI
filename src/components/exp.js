@@ -11,8 +11,6 @@ class Index extends React.Component {
   }
   render() {
   	const load = this.props.loading.effects['exp/add']
-  	console.log(load)
-
   	return (
   		<div>
   			<Button onClick={()=>this.click()} type={'primary'}>点击加</Button>

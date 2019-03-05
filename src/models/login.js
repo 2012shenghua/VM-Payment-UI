@@ -1,38 +1,9 @@
 
-import { login, getGroup, getProductList, 
-  getMachineModelList,
-  getSellMachineList } from '../services/request'
-
-const login1 = async (params) => {
-  return await new Promise((resolve, reject) => {
-    setTimeout(() => {
-      reject(params)
-    }, 2000)
-  })
-}
-
-const login2 = async () => {
-  const result1 = await login1('login1')
-  const result2 = await login1('login2')
-  return (result1 + result2)
-}
-
-const header_params = (loginInfo) => {
-  return {
-    Authorization: `${loginInfo.token_type} ${loginInfo.access_token}`,
-    'Content-Type': 'application/vnd.kii.QueryRequest+json'
-  }
-}
-const headerSell = (loginInfo) => {
-  return {
-    Authorization: `${loginInfo.token_type} ${loginInfo.access_token}`,
-    'Content-Type': 'application/vnd.kii.ThingQueryRequest+json'
-  }
-}
+import { login, getGroup, getProductList } from '../services/request'
 
 
 export default {
-  namespace: 'main',
+  namespace: 'login',
   state: {
     num: 3,
     USER_ID: '966300e36100-336a-8e11-538f-0db9ba07',
@@ -40,11 +11,7 @@ export default {
     isLog: false,
     productInfo: {
       dataInfo: []
-    },
-    sellMachineInfo: {
-      dataInfo: []
-    },
-    machineModelInfo: []
+    }
   },
   subscriptions: {
     setup({ dispatch, history }) {  // eslint-disable-line
@@ -54,11 +21,21 @@ export default {
             type: 'getGroup',
           })
         }
-        if (location.pathname === '/sellMachine') {
-          dispatch({
-            type: 'getGroup'
-          })
-        }
+        // if (location.pathname === '/sellMachine') {
+        //   dispatch({
+        //     type: 'getGroup'
+        //   })
+        // }
+        // if (location.pathname === '/productInfo') {
+        //   dispatch({
+        //     type: 'getGroup'
+        //   })
+        // }
+        // if (location.pathname === '/productInfo') {
+        //   dispatch({
+        //     type: 'getGroup'
+        //   })
+        // }
       });
     },
   },
@@ -107,9 +84,6 @@ export default {
       yield put({
         type: 'getProductList',
       })
-      yield put({
-        type: 'getSellMachineList',
-      })
     },
     // 产品信息列表
     *getProductList({ payload }, { call, put, select }) {
@@ -142,38 +116,27 @@ export default {
     *getSellMachineList({ payload }, { call, put, select }) {
       const loginInfo = yield select(state => state.main.loginInfo)
       const groupMsg = yield select(state => state.main.groupMsg)
-      const sellMachineInfo = yield select(state => state.main.sellMachineInfo)
-      const api_params = 'things/query'
-      const params = {
-        "thingQuery": {
-          "clause": {
-            "type": "contains",
-            "field": "groupOwners",
-            "value": groupMsg.groupID
-          }
-        }
-      }
-      const result = yield call(getSellMachineList, api_params, params, headerSell(loginInfo))
-      sellMachineInfo.dataInfo = result
+      const productInfo = yield select(state => state.main.productInfo)
+      const Authorization = 'Bearer ' + loginInfo.access_token
+      const api_params = '/' + groupMsg.groupID + '/buckets/things/query'
 
-      const paramsM = {
-        "bucketQuery": {
+      const params = {
+        "thingQuery" : {
           "clause": {
-            "type": "all"
+            "type" : "contains",
+            "field" : "userOwners",
+            "value" : loginInfo.id
           },
-          "orderBy": "name",
           "descending": false
         },
-        "bestEffortLimit": 200
       }
-      const apiM = '/' + groupMsg.groupID + '/buckets/machine_model/query'
-      const machineModelInfo = yield call(getMachineModelList, apiM, paramsM, header_params(loginInfo))
-      
+
+      const result = yield call(getProductList, api_params, params, header_params(loginInfo))
+      productInfo.dataInfo = result
       yield put({
         type: 'save',
         payload: {
-          sellMachineInfo,
-          machineModelInfo
+          productInfo
         }
       })
     },

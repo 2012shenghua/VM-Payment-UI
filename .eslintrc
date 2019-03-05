@@ -1,9 +1,48 @@
-{
-    "extends": "umi",
-    "globals": {
-        "document": false,
-        "navigator": false,
-        "window": false,
-        "node": false
-    },
-}
+module.exports = {
+	"env": {
+		"browser": true,
+		"commonjs": true,
+		"es6": true
+	},
+	"parser": "babel-eslint",
+	"parserOptions": {
+		"ecmaFeatures": {
+			"jsx": true
+		},
+		"ecmaVersion": 2018,
+		"sourceType": "module"
+	},
+	"plugins": [
+		"react"
+	],
+	"rules": {
+    "no-script-url": 0,
+		"no-undef":"off",
+		"no-restricted-globals": "off",
+		"no-unused-vars": "off",
+		"indent": [
+			2,
+			2
+		], //强制使用一致的缩进
+		"linebreak-style": [
+			0,
+			"windows"
+		],
+		"quotes": [
+			0,
+			"single"
+		],
+		"semi": [
+			2,
+			"always"
+		],
+		"react/self-closing-comp": 2, //闭合标签检查
+		"camelcase": 2, //强制使用骆驼拼写法命名约定
+		"no-debugger": 2, //	禁用debugger
+		"keyword-spacing": [2, { "before": true, "after": true }],
+		"valid-typeof":2, //		// 强制 typeof 表达式与有效的字符串进行比较  typeof foo === "undefimed" 错误
+		"no-alert":2,
+		"comma-spacing": [2, {"before":false,"after":true}], //逗号前后空格
+		"keyword-spacing": ["error", { "before": true, "after": true }],
+	}
+};
