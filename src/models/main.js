@@ -1,7 +1,7 @@
 
-import { login, getGroup, getProductList, 
+import { login, getGroup, getProductList,
   getMachineModelList,
-  getSellMachineList } from '../services/request'
+  getSellMachineList ,getPayInfoList} from '../services/request'
 
 const login1 = async (params) => {
   return await new Promise((resolve, reject) => {
@@ -44,6 +44,9 @@ export default {
     sellMachineInfo: {
       dataInfo: []
     },
+    payInfo: {
+      dataInfo: []
+    },
     machineModelInfo: []
   },
   subscriptions: {
@@ -55,6 +58,11 @@ export default {
           })
         }
         if (location.pathname === '/sellMachine') {
+          dispatch({
+            type: 'getGroup'
+          })
+        }
+        if (location.pathname === '/payInfo') {
           dispatch({
             type: 'getGroup'
           })
@@ -109,6 +117,9 @@ export default {
       })
       yield put({
         type: 'getSellMachineList',
+      })
+      yield put({
+        type: 'getPayInfoList',
       })
     },
     // 产品信息列表
@@ -168,7 +179,6 @@ export default {
       }
       const apiM = '/' + groupMsg.groupID + '/buckets/machine_model/query'
       const machineModelInfo = yield call(getMachineModelList, apiM, paramsM, header_params(loginInfo))
-      
       yield put({
         type: 'save',
         payload: {
@@ -177,5 +187,33 @@ export default {
         }
       })
     },
-  },
+    // 支付信息
+    *getPayInfoList({ payload }, { call, put, select }) {return;
+      const loginInfo = yield select(state => state.main.loginInfo)
+      const groupMsg = yield select(state => state.main.groupMsg)
+      const payInfo = yield select(state => state.main.payInfo)
+      const Authorization = 'Bearer ' + loginInfo.access_token
+      const api_params = '/users/me/buckets/'+ "1338e7c0-f94b-11e8-8d73-00163e00031d" +'/query';
+      const params = {
+        "bucketQuery": {
+          "clause": {
+            "type": "all", "field": "name",
+            "value": "John Doe"
+          },
+          "orderBy": "name", "descending": false
+        },
+        "bestEffortLimit": 10
+      }
+
+      const result = yield call(getPayInfoList, api_params, params, header_params(loginInfo))
+      console.log(JSON.stringify(result));
+      payInfo.dataInfo = result
+      yield put({
+        type: 'save',
+        payload: {
+          payInfo
+        }
+      })
+    }//end
+  }
 };

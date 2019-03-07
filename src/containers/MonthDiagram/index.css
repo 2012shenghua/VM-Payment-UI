@@ -1,0 +1,14 @@
+
+.tabs .ant-tabs-bar .ant-tabs-tab{
+  background: red!important;
+  color: red!important;
+}
+#topcon{
+  /*border: 1px solid red;*/
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  margin-bottom: 20px;
+
+}

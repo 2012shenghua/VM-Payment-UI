@@ -1,0 +1,41 @@
+#dateRange{
+width: 100%;
+}
+.select{
+  width: 100%!important;
+}
+.title{
+  font-size: 18px;
+  margin-bottom: 5px;
+  padding-left: 5px;
+}
+#con{
+ display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+.topCon{
+  display: inline-block;
+  text-align: left;
+  vertical-align: top;
+}
+.topCon:nth-child(1){
+  width: 40%;
+}
+.topCon:nth-child(2){
+  width: 20%;
+}
+.topCon:nth-child(3){
+  width:20%;
+}
+#table{
+  width: 100%;
+}
+#table td{
+  border:1px solid black;
+  font-size: 16px;
+}
+
+#search{
+
+}
