@@ -100,6 +100,12 @@ export default {
           dispatch({
             type: 'getPayInfoList'
           })
+          dispatch({
+            type: 'getProductList',
+          })
+          dispatch({
+            type: 'getSellMachineList'
+          })
         }
       });
     },
@@ -115,7 +121,7 @@ export default {
     login(state, action) {
       // alert(JSON.stringify(state)+"分割"+JSON.stringify(action))
       return { ...state, ...action.payload };
-    },
+    }
 
   },
 
@@ -235,17 +241,21 @@ export default {
     },
     // 支付信息
     *getPayInfoList({ payload }, { call, put, select }) {
+      console.log(JSON.stringify(payload))
       const loginInfo = yield select(state => state.main.loginInfo)
       const groupMsg = yield select(state => state.main.groupMsg)
       const payInfo = yield select(state => state.main.payInfo)
       const Authorization = 'Bearer ' + loginInfo.access_token
-      const api_params = "users/me/buckets/payment_order/query";
-      const params = {
+      const api_params = '/' + groupMsg.groupID+"/buckets/payment_order/query";
+      let params = {
         "bucketQuery": {
           "clause": {
             "type": "all"
           }
         }
+      }
+      if(payload && payload.param){
+        params = payload.param;
       }
 
       const result = yield call(getPayInfoList, api_params, params, header_params(loginInfo))
