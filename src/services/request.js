@@ -26,6 +26,6 @@ export const getMachineModelList = async (api, params, header) => {
 }
 // 支付信息
 export const getPayInfoList = async (api, params, header) => {
-  return sendPost(API.groups + api, params, header)
+  return sendPost(API.REQUEST_URL + api, params, header)
     .then(res => res.data.results)
 }

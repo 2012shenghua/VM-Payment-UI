@@ -234,21 +234,18 @@ export default {
       })
     },
     // 支付信息
-    *getPayInfoList({ payload }, { call, put, select }) {return
+    *getPayInfoList({ payload }, { call, put, select }) {
       const loginInfo = yield select(state => state.main.loginInfo)
       const groupMsg = yield select(state => state.main.groupMsg)
       const payInfo = yield select(state => state.main.payInfo)
       const Authorization = 'Bearer ' + loginInfo.access_token
-      const api_params = "/users/me/buckets/payment_order/query";
+      const api_params = "users/me/buckets/payment_order/query";
       const params = {
         "bucketQuery": {
           "clause": {
-            "type": "all", "field": "name",
-            "value": "John Doe"
-          },
-          "orderBy": "name", "descending": false
-        },
-        "bestEffortLimit": 10
+            "type": "all"
+          }
+        }
       }
 
       const result = yield call(getPayInfoList, api_params, params, header_params(loginInfo))
