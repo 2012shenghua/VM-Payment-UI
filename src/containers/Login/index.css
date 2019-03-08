@@ -1,0 +1,41 @@
+.con{
+  width: 350px;
+  height: 400px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  margin: auto;
+
+}
+.input{
+  width: 100%;
+}
+.userName{
+  margin-bottom: 25px;
+}
+.bottomCon{
+  margin: 20px 0;
+}
+.register{
+  color: #1890ff;
+  float: right;
+  cursor: pointer;
+}
+.logCon{
+  text-align: center;
+  vertical-align: middle;
+  margin-bottom: 50px;
+}
+.logCon .log{
+  vertical-align: middle;
+  display: inline-block;
+  height: 50px;
+  margin-right: 20px;
+}
+.logCon .title{
+  display: inline-block;
+  vertical-align: middle;
+}
+

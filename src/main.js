@@ -1,6 +1,8 @@
 import React from 'react'
-import { Layout, Menu, Icon } from 'antd'
+import {Layout, Menu, Icon, Form, Dropdown, Button} from 'antd'
 import MenuComponent from './components/Menu'
+import  {connect} from 'dva'
+
 import style from './app.css'
 const { Header, Sider, Content, Footer } = Layout;
 class Main extends React.Component {
@@ -14,7 +16,27 @@ class Main extends React.Component {
     });
   }
 
+  logout(){
+    localStorage.removeItem("groupMsg");
+    localStorage.removeItem("loginInfo");
+    window.location.href = "/user/login";
+  }
+  constructor(){
+    super();
+    const grounMsg = JSON.parse(localStorage.getItem("groupMsg"));
+    this.username =  grounMsg.userInfo.username;
+  }
   render() {
+
+
+
+    const menu = (
+      <Menu>
+        <Menu.Item>
+          <a onClick={this.logout}>退出登陆</a>
+        </Menu.Item>
+      </Menu>
+    );
     return (
       <div style={{ height: '100%' }}>
           <Layout style={{ height: '100%' }}>
@@ -33,6 +55,14 @@ class Main extends React.Component {
                   type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
                   onClick={this.toggle}
                 />
+                <div style={{float:"right",marginRight:"20px"}}>
+                <Dropdown  overlay={menu} placement="bottomCenter">
+                  <a>
+                  <Button>{this.username}<Icon type="down" /></Button>
+                  </a>
+                </Dropdown>
+                </div>
+                {/*<a onClick={this.logout} style={{float:"right",paddingRight:20}} >注销</a>*/}
               </Header>
               <Content style={{
                 margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280,
@@ -49,4 +79,6 @@ class Main extends React.Component {
   }
 }
 
-export default Main
+export default connect(({ Main }) => ({
+  Main,
+}))(Main);

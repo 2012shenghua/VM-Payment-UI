@@ -14,9 +14,11 @@
 }
 
 .login{
-  background: #f0f2f5;
+  background-color: #f0f2f5;
+  background: url("https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg");
   height: 100%;
   width: 100%;
+  position: relative;
 }
 
 :global {

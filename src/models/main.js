@@ -30,6 +30,23 @@ const headerSell = (loginInfo) => {
   }
 }
 
+function loginSuccess({loginInfo,groupMsg}){
+
+  localStorage.setItem("loginInfo",JSON.stringify(loginInfo));
+  localStorage.setItem("groupMsg",JSON.stringify(groupMsg));
+  window.location.href = "/"
+
+}
+function getLoginInfo() {
+  let loginInfo =  JSON.parse(localStorage.getItem("loginInfo"))
+  let groupMsg  = JSON.parse(localStorage.getItem("groupMsg"))
+  if(loginInfo && groupMsg){
+    return {loginInfo,groupMsg};
+  }else {
+
+    return null;
+  }
+}
 
 export default {
   namespace: 'main',
@@ -52,28 +69,54 @@ export default {
   subscriptions: {
     setup({ dispatch, history }) {  // eslint-disable-line
       history.listen(location => {
-        if (location.pathname === '/productInfo') {
+
+        let info =  getLoginInfo();
+        if (info){
           dispatch({
-            type: 'getGroup',
-          })
+            type: 'getStorage',
+            payload:info
+          });
+        } else if( window.location.pathname != "/user/login"){
+          window.location.href = "/user/login"
+          return;
+        }
+
+
+        if (location.pathname === '/productInfo') {
+
+
+             dispatch({
+               type: 'getProductList',
+             })
+
+
         }
         if (location.pathname === '/sellMachine') {
           dispatch({
-            type: 'getGroup'
+            type: 'getSellMachineList'
           })
         }
         if (location.pathname === '/payInfo') {
           dispatch({
-            type: 'getGroup'
+            type: 'getPayInfoList'
           })
         }
       });
     },
   },
   reducers: {
+    getStorage(state,action){
+      // alert(JSON.stringify({ ...state, ...action.payload }))
+      return { ...state, ...action.payload };
+    },
     save(state, action) {
       return { ...state, ...action.payload };
     },
+    login(state, action) {
+      // alert(JSON.stringify(state)+"分割"+JSON.stringify(action))
+      return { ...state, ...action.payload };
+    },
+
   },
 
   effects: {
@@ -93,16 +136,16 @@ export default {
       })
     },
     *getGroup({ payload, after }, { call, put, select }) {  // eslint-disable-line
-      const params = {
-        "grant_type": "password",
-        "username": "juice_member1",
-        "password": "123123"
-      }
+      // const params = {
+      //   "grant_type": "password",
+      //   "username": "juice_member1",
+      //   "password": "123123"
+      // }
+      const  params = payload.param;//输入的参数
       const loginInfo = yield call(login, params)
       const params1 = {
         is_member: loginInfo.id
       }
-
       const Authorization = 'Bearer ' + loginInfo.access_token
       const groupMsg = yield call(getGroup, params1, { Authorization, 'Content-Type': 'application/json' })
       yield put({
@@ -112,15 +155,18 @@ export default {
           groupMsg: groupMsg.groups[0]
         }
       })
-      yield put({
-        type: 'getProductList',
-      })
-      yield put({
-        type: 'getSellMachineList',
-      })
-      yield put({
-        type: 'getPayInfoList',
-      })
+      groupMsg.groups[0].userInfo  = params;
+      loginSuccess({loginInfo,groupMsg:groupMsg.groups[0]})
+
+      // yield put({
+      //   type: 'getProductList',
+      // })
+      // yield put({
+      //   type: 'getSellMachineList',
+      // })
+      // yield put({
+      //   type: 'getPayInfoList',
+      // })
     },
     // 产品信息列表
     *getProductList({ payload }, { call, put, select }) {
@@ -188,12 +234,12 @@ export default {
       })
     },
     // 支付信息
-    *getPayInfoList({ payload }, { call, put, select }) {return;
+    *getPayInfoList({ payload }, { call, put, select }) {return
       const loginInfo = yield select(state => state.main.loginInfo)
       const groupMsg = yield select(state => state.main.groupMsg)
       const payInfo = yield select(state => state.main.payInfo)
       const Authorization = 'Bearer ' + loginInfo.access_token
-      const api_params = '/users/me/buckets/'+ "1338e7c0-f94b-11e8-8d73-00163e00031d" +'/query';
+      const api_params = "/users/me/buckets/payment_order/query";
       const params = {
         "bucketQuery": {
           "clause": {

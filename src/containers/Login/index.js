@@ -1,32 +1,120 @@
 import React from 'react'
-import { Input, Icon, Button, Row, Col } from 'antd';
+import {
+  Form, Icon, Input, Button, Checkbox,
+} from 'antd';
 import APP from '../../app.css'
-class Index extends React.Component {
+import style from "./index.css"
+import log from "./log.jpg";
+import { connect } from 'dva';
+
+
+let param = {"grant_type": "password",username:"",password:""};
+let remember = {username:"",password:"",check:false};
+
+
+ class NormalLoginForm extends React.Component {
+  handleSubmit = (e) => {
+
+    if(remember.check == true){
+      localStorage.setItem("remember",JSON.stringify(remember));
+    }else{
+      localStorage.removeItem("remember");
+    }
+
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        console.log('Received values of form: ',param);
+        this.props.dispatch({
+          type: 'main/getGroup',
+          payload:{param:param}
+        });
+      }else{
+
+      }
+    });
+  }
+
+  handleUsername(e){
+    console.log(e.target.value)
+    param.username = e.target.value;
+    remember.username = e.target.value;
+  }
+   handlePassworld(e){
+
+    console.log(e.target.value)
+     param.password = e.target.value;
+     remember.password = e.target.value;
+   }
+   handleCheck(e){
+       remember.check = e.target.checked;
+   }
+
+   constructor(){
+     super();
+     let rememberTemp = JSON.parse(localStorage.getItem("remember"));
+     if(rememberTemp){
+       remember.check = rememberTemp.check
+        if( remember.check){
+          remember.username = rememberTemp.username;
+          remember.password = rememberTemp.password;
+          param.username = rememberTemp.username;
+          param.password = rememberTemp.password;
+        }
+     }
+ }
 
   render() {
+    const {getFieldDecorator} = this.props.form;
     return (
-      <div className={APP.login} style={{ background: '#f0f2f5' }}>
-        <Row>
-          <Col>
-            <Input
-              style={{ width: '200px' }}
-              placeholder="用户名"
-              prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Input
-              style={{ width: '200px' }}
-              placeholder="密码"
-              prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-            />
-          </Col>
-        </Row>
-        <Button type="primary">登录</Button>
+      <div className={APP.login} >
+        <div className={style.con}>
+        <div className={style.logCon}>
+          <img src={log} className={style.log} alt="log"/>
+          <h2 className={style.title}>这是一个标题</h2>
+        </div>
+      <Form onSubmit={this.handleSubmit} className="login-form">
+        <Form.Item>
+          {getFieldDecorator('username', {
+            initialValue:remember.username,
+            rules: [{required: true, message: '请输入用户名!'}],
+          })(
+            <Input onChange={(e)=>this.handleUsername(e)} prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}}/>} placeholder="用户名"/>
+          )}
+        </Form.Item>
+        <Form.Item>
+          {getFieldDecorator('password',
+
+            {
+              initialValue:remember.password,
+            rules: [{required: true, message: '请输入密码'}],
+          })(
+            <Input  onChange={(e)=>this.handlePassworld(e)} prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}}/>} type="password"
+                   placeholder="密码"/>
+          )}
+        </Form.Item>
+        <Form.Item>
+          {getFieldDecorator('remember', {
+            valuePropName: 'checked',
+            initialValue: remember.check,
+          })(
+            <Checkbox onChange={this.handleCheck}>记住密码</Checkbox>
+          )}
+          <a className={style.register} href="">忘记密码</a>
+          <Button type="primary" htmlType="submit" className={style.input}>
+            Log in
+          </Button>
+        <a href="">现在注册!</a>
+        </Form.Item>
+      </Form>
+        </div>
       </div>
-    )
+    );
   }
 }
-export default Index
+
+const Index = Form.create({name: 'normal_login'})(NormalLoginForm);
+// const Index = Form.create({name: 'normal_login'})(<NormalLoginForm dispatch={dispatch} />);
+export default connect(({ Index }) => ({
+  Index,
+}))(Index);
