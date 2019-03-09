@@ -9,26 +9,36 @@ const Option = Select.Option;
 const Search = Input.Search;
 
 let inputData = {};
+
 class Index extends React.Component {
   dateChange(date, dateString) {
 
+    if(date.length >= 2){
+      let start = date[0].valueOf();
+      let end = date[1].valueOf();
+      inputData.range = {start:start,end:end};
+    }else{
+       delete  inputData.range
+    }
+
 
   }
-  productChange(value){
+
+  productChange(value) {
 
     inputData.product = value;
 
   }
 
-  machinChange(value){
+  machinChange(value) {
 
     inputData.machin = value;
 
 
   }
 
-  search = ()=> {
-    let issearch = inputData.product || inputData.machin;
+  search = () => {
+    let issearch = inputData.product || inputData.machin || inputData.range;
     let param = {
       "bucketQuery": {
         "clause": {
@@ -39,21 +49,34 @@ class Index extends React.Component {
       "bestEffortLimit": 100
     };
     let clause = param.bucketQuery.clause;
-    if(inputData.machin){
+    if (inputData.machin) {
       let clause1 = {
         "type": "eq", "field": "vendor_thing_id",
         "value": inputData.machin
       }
-      clause.clauses =clause.clauses ? clause.clauses: [];
+      clause.clauses = clause.clauses ? clause.clauses : [];
       clause.clauses.push(clause1);
 
     }
-    if (inputData.product){
+    if (inputData.product) {
       let clause1 = {
         "type": "eq", "field": "product",
         "value": inputData.product
       }
-      clause.clauses =clause.clauses ?clause.clauses: [];
+      clause.clauses = clause.clauses ? clause.clauses : [];
+      clause.clauses.push(clause1);
+
+    }
+    if (inputData.range) {
+      let clause1 = {
+        "type": "range",
+        "field": "_created",
+        "upperLimit": inputData.range.end,
+        "upperIncluded": true,
+        "lowerLimit": inputData.range.start,
+        "lowerIncluded": true
+      }
+        clause.clauses = clause.clauses ? clause.clauses : [];
       clause.clauses.push(clause1);
 
     }
@@ -63,7 +86,7 @@ class Index extends React.Component {
 
     this.props.dispatch({
       type: 'main/getPayInfoList',
-      payload:{param:param}
+      payload: {param: param}
     })
 
 
@@ -177,7 +200,7 @@ class Index extends React.Component {
 
           <div className={style.topCon}>
             <div className={style.title}>售货机</div>
-            <Select onChange={this.machinChange}  className={style.select} defaultValue="">
+            <Select onChange={this.machinChange} className={style.select} defaultValue="">
               {machineOptions}
             </Select>
           </div>
