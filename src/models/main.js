@@ -80,16 +80,10 @@ export default {
           window.location.href = "/user/login"
           return;
         }
-
-
         if (location.pathname === '/productInfo') {
-
-
              dispatch({
                type: 'getProductList',
              })
-
-
         }
         if (location.pathname === '/sellMachine') {
           dispatch({
@@ -107,6 +101,7 @@ export default {
             type: 'getSellMachineList'
           })
         }
+
       });
     },
   },

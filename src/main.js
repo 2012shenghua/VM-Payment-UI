@@ -1,8 +1,7 @@
 import React from 'react'
-import {Layout, Menu, Icon, Form, Dropdown, Button} from 'antd'
+import {Layout, Menu, Icon, Form, Dropdown, Button,Card} from 'antd'
 import MenuComponent from './components/Menu'
 import  {connect} from 'dva'
-
 import style from './app.css'
 const { Header, Sider, Content, Footer } = Layout;
 class Main extends React.Component {
@@ -64,12 +63,14 @@ class Main extends React.Component {
                 </div>
                 {/*<a onClick={this.logout} style={{float:"right",paddingRight:20}} >注销</a>*/}
               </Header>
+              <Card style={{background:"transparent",border:"none"}}>
               <Content style={{
-                margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280,
+                // margin: '24px 16px',
+                padding: 24, background: '#fff', minHeight: 380,
               }}
               >
                 {this.props.children}
-              </Content>
+              </Content></Card>
               <Footer style={{ textAlign: 'center' }}>
                 Ant Design ©2018 Created by Ant UED
           </Footer>

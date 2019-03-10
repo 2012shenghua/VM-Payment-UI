@@ -218,8 +218,7 @@ class Index extends React.Component {
           </div>
         </div>
 
-        <Table columns={columns} dataSource={dataSource}/>
-
+        <Table pagination={{ pageSize: 5 }} columns={columns} dataSource={dataSource}/>
 
       </div>
     )

@@ -1,10 +1,12 @@
 import React from 'react'
-import {Menu, Icon, DatePicker, Tabs, Table, Input, Button} from 'antd'
+import {Card, Menu, Icon, DatePicker, Tabs, Table, Input, Button} from 'antd'
 import moment from 'moment'
 import style from "./index.css"
 import echarts from 'echarts/lib/echarts';
 import 'echarts/lib/chart/line';
-import 'echarts/lib/chart/bar';
+import 'echarts/lib/component/title';
+import 'echarts/lib/component/tooltip';
+import 'echarts/lib/component/legend';
 import {connect} from "dva";
 
 const {MonthPicker} = DatePicker;
@@ -36,7 +38,6 @@ class Index extends React.Component {
 
   constructor() {
     super();
-
     this.getDefaultGrange()
 
 
@@ -111,13 +112,19 @@ class Index extends React.Component {
 
     myChart.setOption({
         title: {
-          text: '折线图堆叠'
+          text: '销售额',
+          right: 50,
+          textStyle: {
+            color: "black",
+            fontSize: 16,
+
+          }
         },
         tooltip: {
           trigger: 'axis'
         },
         legend: {
-          data: ['邮件营销', '联盟广告', '视频广告', '直接访问', '搜索引擎']
+          data: g_productNameArr
         },
         grid: {
           left: '3%',
@@ -131,11 +138,13 @@ class Index extends React.Component {
           }
         },
         xAxis: {
+          name: "日期",
           type: 'category',
           boundaryGap: false,
           data: Object.keys(g_dateDics)
         },
         yAxis: {
+          name: "销售额(元)",
           type: 'value'
         },
         series: (function () {
@@ -169,13 +178,19 @@ class Index extends React.Component {
     var myChart = echarts.init(document.getElementById('chartBottom'));
     myChart.setOption({
         title: {
-          text: '折线图堆叠'
+          text: '利润',
+          right: 50,
+          textStyle: {
+            color: "black",
+            fontSize: 16,
+
+          }
         },
         tooltip: {
           trigger: 'axis'
         },
         legend: {
-          data: ['邮件营销', '联盟广告', '视频广告', '直接访问', '搜索引擎']
+          data: g_machineNameArr
         },
         grid: {
           left: '3%',
@@ -194,7 +209,8 @@ class Index extends React.Component {
           data: Object.keys(g_dateDics)
         },
         yAxis: {
-          type: 'value'
+          type: 'value',
+          name: "利润(元)"
         },
         series: (function () {
 
@@ -266,7 +282,11 @@ class Index extends React.Component {
         g_dateDics[moment(value._created).date()][value.product].num += value.quantity
 
       } else {
-        g_dateDics[moment(value._created).date()][value.product] = {price: value.price, cost: value.cost,num:value.quantity}
+        g_dateDics[moment(value._created).date()][value.product] = {
+          price: value.price,
+          cost: value.cost,
+          num: value.quantity
+        }
 
       }
 
@@ -277,16 +297,13 @@ class Index extends React.Component {
         g_dateDics[moment(value._created).date()][value.vendor_thing_id].num += value.quantity
 
       } else {
-        g_dateDics[moment(value._created).date()][value.vendor_thing_id] = {price: value.price, cost: value.cost,num:value.quantity}
+        g_dateDics[moment(value._created).date()][value.vendor_thing_id] = {
+          price: value.price,
+          cost: value.cost,
+          num: value.quantity
+        }
 
       }
-
-
-
-      //收款
-      //   g_dateDics[moment(value._created).date()][value.product] != null ?
-      //     g_dateDics[moment(value._created).date()][value.product] += value.price :
-      //     g_dateDics[moment(value._created).date()][value.product] = value.price
 
 
     });
@@ -317,10 +334,10 @@ class Index extends React.Component {
       let profit = 0;
       let num = 0;
       for (let key in g_dateDics) {
-        if(g_dateDics[key][value]){
-          price+= g_dateDics[key][value]["price"]
-          profit+= g_dateDics[key][value]["price"] - g_dateDics[key][value]["cost"]
-          num+= g_dateDics[key][value]["num"]
+        if (g_dateDics[key][value]) {
+          price += g_dateDics[key][value]["price"]
+          profit += g_dateDics[key][value]["price"] - g_dateDics[key][value]["cost"]
+          num += g_dateDics[key][value]["num"]
         }
 
       }
@@ -330,10 +347,17 @@ class Index extends React.Component {
         name: value,
         price: price,
         profit: profit,
-        number:num
+        number: num
       }
 
       data.push(dic);
+
+      //test
+      // data.push(dic);
+      // data.push(dic);data.push(dic);
+      // data.push(dic);
+      //
+
 
     });
 
@@ -361,10 +385,10 @@ class Index extends React.Component {
       let profit = 0;
       let num = 0;
       for (let key in g_dateDics) {
-        if(g_dateDics[key][value]){
-          price+= g_dateDics[key][value]["price"]
-          profit+= g_dateDics[key][value]["price"] - g_dateDics[key][value]["cost"]
-          num+= g_dateDics[key][value]["num"]
+        if (g_dateDics[key][value]) {
+          price += g_dateDics[key][value]["price"]
+          profit += g_dateDics[key][value]["price"] - g_dateDics[key][value]["cost"]
+          num += g_dateDics[key][value]["num"]
         }
 
       }
@@ -374,19 +398,19 @@ class Index extends React.Component {
         vendor_thing_id: value,
         price: price,
         profit: profit,
-        number:num
+        number: num
       }
 
       data2.push(dic);
 
     });
-
     return (
       <div>
-
         <section id={style.topcon}>
-          <MonthPicker onChange={this.monthChange}/>
-          <Button onClick={this.search} type="primary" icon="search">Search</Button>
+          <div>
+            <MonthPicker defaultValue={moment()}  onChange={this.monthChange}  placeholder="选择月份"/>
+            <Button style={{marginLeft:20}} onClick={this.search} type="primary" icon="search">搜索</Button>
+          </div>
           <div>
             <span>销售总额 : </span>
             <span>{price.toFixed(2)}</span>
@@ -396,19 +420,20 @@ class Index extends React.Component {
             <span>{(price - cost).toFixed(2)}</span>
           </div>
         </section>
-        <Tabs className={style.tabs} size="large" type="card" style={{width: "100%"}}>
-          <TabPane tab="Tab Title 1" key="1">
+        <Tabs size="large" type="card" style={{width: "100%"}}>
+          <TabPane tab="销售及利润曲线" key="1">
             <div id="chartTop" style={{height: 200}}></div>
             <div id="chartBottom" style={{height: 200}}></div>
           </TabPane>
-          <TabPane tab="Tab Title 2" key="2">
+          <TabPane tab="产品报表" key="2">
             <Table
               columns={columns}
               dataSource={data}
               bordered
+              pagination={{pageSize: 5}}
             />
           </TabPane>
-          <TabPane tab="Tab Title 3" key="3">
+          <TabPane tab="售货机报表" key="3">
             <Table
               columns={columns2}
               dataSource={data2}
