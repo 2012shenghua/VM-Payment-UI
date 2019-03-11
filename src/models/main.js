@@ -2,7 +2,7 @@
 import { login, getGroup, getProductList,
   getMachineModelList,
   getSellMachineList ,getPayInfoList} from '../services/request'
-
+import {Modal} from 'antd'
 const login1 = async (params) => {
   return await new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -31,11 +31,9 @@ const headerSell = (loginInfo) => {
 }
 
 function loginSuccess({loginInfo,groupMsg}){
-
   localStorage.setItem("loginInfo",JSON.stringify(loginInfo));
   localStorage.setItem("groupMsg",JSON.stringify(groupMsg));
-  window.location.href = "/"
-
+  window.location.href = "/productInfo"
 }
 function getLoginInfo() {
   let loginInfo =  JSON.parse(localStorage.getItem("loginInfo"))
@@ -121,29 +119,29 @@ export default {
   },
 
   effects: {
-    *login({ payload }, { call, put, select }) {  // eslint-disable-line
-      const params = {
-        "grant_type": "password",
-        "username": "juice_member1",
-        "password": "123123"
-      }
-      const result = yield call(login, params)
-      yield put({
-        type: 'save',
-        payload: {
-          USER_ID: result.id,
-          isLog: true
-        }
-      })
-    },
+    // *login({ payload }, { call, put, select }) {  // eslint-disable-line
+    //   const params = {
+    //     "grant_type": "password",
+    //     "username": "juice_member1",
+    //     "password": "123123"
+    //   }
+    //   const result = yield call(login, params)
+    //   yield put({
+    //     type: 'save',
+    //     payload: {
+    //       USER_ID: result.id,
+    //       isLog: true
+    //     }
+    //   })
+    // },
     *getGroup({ payload, after }, { call, put, select }) {  // eslint-disable-line
-      // const params = {
-      //   "grant_type": "password",
-      //   "username": "juice_member1",
-      //   "password": "123123"
-      // }
       const  params = payload.param;//输入的参数
-      const loginInfo = yield call(login, params)
+      let loginInfo = yield call(login, params)
+      loginInfo = loginInfo
+      if (!loginInfo) {
+        Modal.error({ content: '用户名或密码输入有误'});
+        return
+      }
       const params1 = {
         is_member: loginInfo.id
       }

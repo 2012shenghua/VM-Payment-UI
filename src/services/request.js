@@ -3,7 +3,7 @@ import {getRequest, postRequestPre, postRequest, sendPost} from './index'
 
 export const login = async (params) => {
   return postRequestPre(API.login, params)
-    .then(res => res.data)
+    .then(res => res.data).catch(err => {console.log(err)})
 }
 
 export const getGroup = async (params, header) => {

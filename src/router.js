@@ -23,7 +23,7 @@ function RouterConfig({ history }) {
           <Route path="/sellMachine" exact component={SellMachine} />
           <Route path="/payInfo" exact component={PayInfo} />
           <Route path="/monthDiagram" exact component={MonthDiagram} />
-          <Route path="/" exact component={IndexPage} />
+          <Route path="/" exact component={ProductInfo} />
         </Main>
       </Switch>
     </Router>

@@ -7,7 +7,7 @@ import mainModel from './models/main'
 import Route from './router'
 import {createBrowserHistory as createHistory} from "history"
 // 1. Initialize
-const app = dva({history:createHistory()});
+const app = dva({history:createHistory(),onError: e => {console.error(e);}});
 app.use(createLoading({
 }))
 // 2. Plugins

@@ -4,7 +4,6 @@ import {
 } from 'antd';
 import APP from '../../app.css'
 import style from "./index.css"
-import log from "./log.jpg";
 import { connect } from 'dva';
 
 
@@ -24,7 +23,6 @@ let remember = {username:"",password:"",check:false};
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ',param);
         this.props.dispatch({
           type: 'main/getGroup',
           payload:{param:param}
@@ -41,8 +39,6 @@ let remember = {username:"",password:"",check:false};
     remember.username = e.target.value;
   }
    handlePassworld(e){
-
-    console.log(e.target.value)
      param.password = e.target.value;
      remember.password = e.target.value;
    }
@@ -70,8 +66,8 @@ let remember = {username:"",password:"",check:false};
       <div className={APP.login} >
         <div className={style.con}>
         <div className={style.logCon}>
-          <img src={log} className={style.log} alt="log"/>
-          <h2 className={style.title}>这是一个标题</h2>
+          {/* <img src={require('./log.jpg')} className={style.log} alt="log"/> */}
+          <h2 className={style.title}>VM Payment UI</h2>
         </div>
       <Form onSubmit={this.handleSubmit} className="login-form">
         <Form.Item>
@@ -100,11 +96,11 @@ let remember = {username:"",password:"",check:false};
           })(
             <Checkbox onChange={this.handleCheck}>记住密码</Checkbox>
           )}
-          <a className={style.register} href="">忘记密码</a>
+          {/* <a className={style.register} href="">忘记密码</a> */}
           <Button type="primary" htmlType="submit" className={style.input}>
-            Log in
+            登录
           </Button>
-        <a href="">现在注册!</a>
+        {/* <a href="">现在注册!</a> */}
         </Form.Item>
       </Form>
         </div>
