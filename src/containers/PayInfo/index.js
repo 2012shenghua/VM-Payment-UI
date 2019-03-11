@@ -117,53 +117,19 @@ class Index extends React.Component {
         out_trade_no: item.out_trade_no
       }
     })
-// alert(JSON.stringify(dataSource))
-    const dataSourceStatus = [{
-      key: '1',
-      name: '胡彦斌',
-      age: 32,
-      address: '西湖区湖底公园1号'
-    }, {
-      key: '2',
-      name: '胡彦祖',
-      age: 42,
-      address: '西湖区湖底公园1号'
-    }, {
-      key: '2',
-      name: '胡彦祖',
-      age: 42,
-      address: '西湖区湖底公园1号'
-    }, {
-      key: '2',
-      name: '胡彦祖',
-      age: 42,
-      address: '西湖区湖底公园1号'
-    }, {
-      key: '2',
-      name: '胡彦祖',
-      age: 42,
-      address: '西湖区湖底公园1号'
-    }, {
-      key: '2',
-      name: '胡彦祖',
-      age: 42,
-      address: '西湖区湖底公园1号'
-    }, {
-      key: '2',
-      name: '胡彦祖',
-      age: 42,
-      address: '西湖区湖底公园1号'
-    }];
-
 
     const columns = [{
       title: '日期',
       dataIndex: '_created',
-      key: '_created',
+      key: '_created'
+
     }, {
       title: '金额',
       dataIndex: 'price',
       key: 'price',
+      sorter(a, b) {
+        return a.price - b.price
+      }
     }, {
       title: '产品',
       dataIndex: 'product',
@@ -206,15 +172,12 @@ class Index extends React.Component {
           </div>
           <div className={style.topCon}>
             <div className={style.title}>产品</div>
-            <div>
               <Select onChange={this.productChange} className={style.select}>
                 {productOptions}
               </Select>
-              <div style={{height: 10}}></div>
-              <Button onClick={this.search} className={style.select} type="primary" icon="search">Search</Button>
-              {/*<Input  className={style.select} addonBefore={<Icon type="search" />} defaultValue="mysite" />*/}
-              <div style={{height: 10}}></div>
-            </div>
+          </div>
+          <div className={style.topCon}>
+          <Button onClick={this.search}  type="primary" icon="search">搜索</Button>
           </div>
         </div>
 

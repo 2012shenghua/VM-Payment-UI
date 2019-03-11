@@ -60,7 +60,7 @@ class Index extends React.Component {
         <Breadcrumb style={{marginBottom: 10}}>
           <Breadcrumb.Item>售货机</Breadcrumb.Item>
         </Breadcrumb>
-        <Table pagination={{pageSize:1}}
+        <Table pagination={{pageSize:5}}
                columns={columns} dataSource={dataSource} />
       </div>
 

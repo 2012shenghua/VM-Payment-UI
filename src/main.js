@@ -72,7 +72,7 @@ class Main extends React.Component {
                 {this.props.children}
               </Content></Card>
               <Footer style={{ textAlign: 'center' }}>
-                Ant Design ©2018 Created by Ant UED
+                VM Payment UI ©2018 Created by VM Payment
           </Footer>
             </Layout>
           </Layout>

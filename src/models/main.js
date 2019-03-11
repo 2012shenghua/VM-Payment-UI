@@ -1,8 +1,10 @@
-
-import { login, getGroup, getProductList,
+import {
+  login, getGroup, getProductList,
   getMachineModelList,
-  getSellMachineList ,getPayInfoList} from '../services/request'
+  getSellMachineList, getPayInfoList
+} from '../services/request'
 import {Modal} from 'antd'
+
 const login1 = async (params) => {
   return await new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -30,17 +32,18 @@ const headerSell = (loginInfo) => {
   }
 }
 
-function loginSuccess({loginInfo,groupMsg}){
-  localStorage.setItem("loginInfo",JSON.stringify(loginInfo));
-  localStorage.setItem("groupMsg",JSON.stringify(groupMsg));
+function loginSuccess({loginInfo, groupMsg}) {
+  localStorage.setItem("loginInfo", JSON.stringify(loginInfo));
+  localStorage.setItem("groupMsg", JSON.stringify(groupMsg));
   window.location.href = "/productInfo"
 }
+
 function getLoginInfo() {
-  let loginInfo =  JSON.parse(localStorage.getItem("loginInfo"))
-  let groupMsg  = JSON.parse(localStorage.getItem("groupMsg"))
-  if(loginInfo && groupMsg){
-    return {loginInfo,groupMsg};
-  }else {
+  let loginInfo = JSON.parse(localStorage.getItem("loginInfo"))
+  let groupMsg = JSON.parse(localStorage.getItem("groupMsg"))
+  if (loginInfo && groupMsg) {
+    return {loginInfo, groupMsg};
+  } else {
 
     return null;
   }
@@ -65,23 +68,23 @@ export default {
     machineModelInfo: []
   },
   subscriptions: {
-    setup({ dispatch, history }) {  // eslint-disable-line
+    setup({dispatch, history}) {  // eslint-disable-line
       history.listen(location => {
 
-        let info =  getLoginInfo();
-        if (info){
+        let info = getLoginInfo();
+        if (info) {
           dispatch({
             type: 'getStorage',
-            payload:info
+            payload: info
           });
-        } else if( window.location.pathname != "/user/login"){
+        } else if (window.location.pathname != "/user/login") {
           window.location.href = "/user/login"
           return;
         }
         if (location.pathname === '/productInfo') {
-             dispatch({
-               type: 'getProductList',
-             })
+          dispatch({
+            type: 'getProductList',
+          })
         }
         if (location.pathname === '/sellMachine') {
           dispatch({
@@ -104,16 +107,16 @@ export default {
     },
   },
   reducers: {
-    getStorage(state,action){
+    getStorage(state, action) {
       // alert(JSON.stringify({ ...state, ...action.payload }))
-      return { ...state, ...action.payload };
+      return {...state, ...action.payload};
     },
     save(state, action) {
-      return { ...state, ...action.payload };
+      return {...state, ...action.payload};
     },
     login(state, action) {
       // alert(JSON.stringify(state)+"分割"+JSON.stringify(action))
-      return { ...state, ...action.payload };
+      return {...state, ...action.payload};
     }
 
   },
@@ -134,19 +137,19 @@ export default {
     //     }
     //   })
     // },
-    *getGroup({ payload, after }, { call, put, select }) {  // eslint-disable-line
-      const  params = payload.param;//输入的参数
+    * getGroup({payload, after}, {call, put, select}) {  // eslint-disable-line
+      const params = payload.param;//输入的参数
       let loginInfo = yield call(login, params)
       loginInfo = loginInfo
       if (!loginInfo) {
-        Modal.error({ content: '用户名或密码输入有误'});
+        Modal.error({content: '用户名或密码输入有误'});
         return
       }
       const params1 = {
         is_member: loginInfo.id
       }
       const Authorization = 'Bearer ' + loginInfo.access_token
-      const groupMsg = yield call(getGroup, params1, { Authorization, 'Content-Type': 'application/json' })
+      const groupMsg = yield call(getGroup, params1, {Authorization, 'Content-Type': 'application/json'})
       yield put({
         type: 'save',
         payload: {
@@ -154,8 +157,8 @@ export default {
           groupMsg: groupMsg.groups[0]
         }
       })
-      groupMsg.groups[0].userInfo  = params;
-      loginSuccess({loginInfo,groupMsg:groupMsg.groups[0]})
+      groupMsg.groups[0].userInfo = params;
+      loginSuccess({loginInfo, groupMsg: groupMsg.groups[0]})
 
       // yield put({
       //   type: 'getProductList',
@@ -168,7 +171,7 @@ export default {
       // })
     },
     // 产品信息列表
-    *getProductList({ payload }, { call, put, select }) {
+    * getProductList({payload}, {call, put, select}) {
       const loginInfo = yield select(state => state.main.loginInfo)
       const groupMsg = yield select(state => state.main.groupMsg)
       const productInfo = yield select(state => state.main.productInfo)
@@ -195,7 +198,7 @@ export default {
         }
       })
     },
-    *getSellMachineList({ payload }, { call, put, select }) {
+    * getSellMachineList({payload}, {call, put, select}) {
       const loginInfo = yield select(state => state.main.loginInfo)
       const groupMsg = yield select(state => state.main.groupMsg)
       const sellMachineInfo = yield select(state => state.main.sellMachineInfo)
@@ -233,21 +236,21 @@ export default {
       })
     },
     // 支付信息
-    *getPayInfoList({ payload }, { call, put, select }) {
+    * getPayInfoList({payload}, {call, put, select}) {
       console.log(JSON.stringify(payload))
       const loginInfo = yield select(state => state.main.loginInfo)
       const groupMsg = yield select(state => state.main.groupMsg)
       const payInfo = yield select(state => state.main.payInfo)
       const Authorization = 'Bearer ' + loginInfo.access_token
-      const api_params = '/' + groupMsg.groupID+"/buckets/payment_order/query";
+      const api_params = '/' + groupMsg.groupID + "/buckets/payment_order/query";
       let params = {
         "bucketQuery": {
           "clause": {
-            "type": "all"
+            "type": "eq", "field": "status", "value": "success"
           }
         }
       }
-      if(payload && payload.param){
+      if (payload && payload.param) {
         params = payload.param;
       }
 

@@ -12,7 +12,7 @@ import {connect} from "dva";
 const {MonthPicker} = DatePicker;
 const TabPane = Tabs.TabPane;
 
-const inputData = {};
+let inputData = {};
 let g_dateDics = {};//一个与所有天数为key的dic
 let g_productNameArr = [];//所有商品名称
 let g_machineNameArr = [];//所有售货机
@@ -24,6 +24,11 @@ class Index extends React.Component {
   }
 
   getDefaultGrange() {
+
+    // inputData = {};
+    // g_dateDics = {};//一个与所有天数为key的dic
+    // g_productNameArr = [];//所有商品名称
+    // g_machineNameArr = [];//所有售货机
 
     g_dateDics = {}
     //初始化为当月
@@ -39,7 +44,12 @@ class Index extends React.Component {
   constructor() {
     super();
     this.getDefaultGrange()
-
+    this.getDefaultRange()
+  }
+  getDefaultRange(){
+      const start = moment().startOf('month').valueOf();
+      const end = moment().valueOf();
+      inputData.range = {start: start, end: end};
 
   }
 
@@ -105,12 +115,12 @@ class Index extends React.Component {
   }
 
   setChartTop() {
-    var myChart = echarts.init(document.getElementById('chartTop'));
+    window.myChart = echarts.init(document.getElementById('chartTop'));
 
     // const endDay = new Date(inputData.range.end).getDate();
 
 
-    myChart.setOption({
+   window.myChart.setOption({
         title: {
           text: '销售额',
           right: 50,
@@ -175,8 +185,8 @@ class Index extends React.Component {
   }
 
   setChartBottom() {
-    var myChart = echarts.init(document.getElementById('chartBottom'));
-    myChart.setOption({
+    window.myChart2 = echarts.init(document.getElementById('chartBottom'));
+    window.myChart2.setOption({
         title: {
           text: '利润',
           right: 50,
@@ -242,6 +252,13 @@ class Index extends React.Component {
   componentDidMount() {
     this.setChartTop();
     this.setChartBottom();
+    this.search();
+
+    window.onresize = function (){
+      window.myChart.resize();
+      window.myChart2.resize();
+    }
+
   }
 
   componentDidUpdate() {
@@ -251,7 +268,7 @@ class Index extends React.Component {
   }
 
   render() {
-
+    this.getDefaultGrange();
     const {main} = this.props
     const {payInfo} = main
     const {dataInfo} = payInfo
@@ -352,13 +369,6 @@ class Index extends React.Component {
 
       data.push(dic);
 
-      //test
-      // data.push(dic);
-      // data.push(dic);data.push(dic);
-      // data.push(dic);
-      //
-
-
     });
 
 
@@ -408,8 +418,8 @@ class Index extends React.Component {
       <div>
         <section id={style.topcon}>
           <div>
-            <MonthPicker defaultValue={moment()}  onChange={this.monthChange}  placeholder="选择月份"/>
-            <Button style={{marginLeft:20}} onClick={this.search} type="primary" icon="search">搜索</Button>
+            <MonthPicker defaultValue={moment()} onChange={this.monthChange} placeholder="选择月份"/>
+            <Button style={{marginLeft: 20}} onClick={this.search} type="primary" icon="search">搜索</Button>
           </div>
           <div>
             <span>销售总额 : </span>
@@ -438,6 +448,7 @@ class Index extends React.Component {
               columns={columns2}
               dataSource={data2}
               bordered
+              pagination={{pageSize: 5}}
             />
           </TabPane>
         </Tabs>
