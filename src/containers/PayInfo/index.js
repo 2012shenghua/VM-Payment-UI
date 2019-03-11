@@ -161,7 +161,7 @@ class Index extends React.Component {
         <div id={style.con}>
           <div className={style.topCon}>
             <div className={style.title}>日期范围</div>
-            <RangePicker onChange={this.dateChange} id={style.dateRange}/>
+            <RangePicker placeholder={["起始日期","结束日期"]} onChange={this.dateChange} id={style.dateRange}/>
           </div>
 
           <div className={style.topCon}>
