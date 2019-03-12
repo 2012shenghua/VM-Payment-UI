@@ -35,7 +35,7 @@ class MenuComponent extends React.Component {
   render() {
     return (
       <div>
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={['0']}>
+        <Menu theme="dark" mode="inline" >
           {this.menuListFunc()}
         </Menu>
       </div>
