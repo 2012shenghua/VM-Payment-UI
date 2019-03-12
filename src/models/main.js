@@ -1,7 +1,7 @@
 import {
   login, getGroup, getProductList,
   getMachineModelList,
-  getSellMachineList, getPayInfoList
+  getSellMachineList, getPayInfoList,addProduct
 } from '../services/request'
 import {Modal} from 'antd'
 
@@ -58,6 +58,10 @@ export default {
     isLog: false,
     productInfo: {
       dataInfo: []
+    },
+    addProductInfo:{
+      dataInfo: [],
+      success:false
     },
     sellMachineInfo: {
       dataInfo: []
@@ -138,6 +142,7 @@ export default {
     //   })
     // },
     * getGroup({payload, after}, {call, put, select}) {  // eslint-disable-line
+
       const params = payload.param;//输入的参数
       let loginInfo = yield call(login, params)
       loginInfo = loginInfo
@@ -198,6 +203,23 @@ export default {
         }
       })
     },
+    // 创建产品
+    * addProduct({payload,callback}, {call, put, select}) {
+      const loginInfo = yield select(state => state.main.loginInfo)
+      const groupMsg = yield select(state => state.main.groupMsg)
+      const addProductInfo = yield select(state => state.main.addProductInfo)
+      const Authorization = 'Bearer ' + loginInfo.access_token
+      const api_params = '/' + groupMsg.groupID + '/buckets/product/objects'
+      const params = payload;
+      const data = yield call(addProduct, api_params, params, header_params(loginInfo))
+      if (!data.objectID) return;
+
+      callback();//回调影藏控件
+
+
+
+
+    },
     * getSellMachineList({payload}, {call, put, select}) {
       const loginInfo = yield select(state => state.main.loginInfo)
       const groupMsg = yield select(state => state.main.groupMsg)
@@ -255,7 +277,7 @@ export default {
       }
 
       const result = yield call(getPayInfoList, api_params, params, header_params(loginInfo))
-      console.log(JSON.stringify(result));
+      // console.log(JSON.stringify(result));
       payInfo.dataInfo = result
       yield put({
         type: 'save',

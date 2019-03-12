@@ -15,6 +15,11 @@ export const getProductList = async (api, params, header) => {
   return sendPost(API.groups + api, params, header)
     .then(res => res.data.results)
 }
+
+export const addProduct = async (api, params, header) => {
+  return sendPost(API.groups + api, params, header)
+    .then(res => res.data)
+}
 export const getSellMachineList = async (api, params, header) => {
   return sendPost(API.REQUEST_URL + api, params, header)
     .then(res => res.data.results)
