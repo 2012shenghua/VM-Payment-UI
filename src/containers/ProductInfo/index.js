@@ -1,5 +1,5 @@
 import React from 'react'
-import {Breadcrumb, Icon, Table, Button, Input, Form} from 'antd'
+import {Breadcrumb, Icon, Table, Button, Input, Form, Popconfirm, message} from 'antd'
 import {connect} from 'dva';
 import style from "./index.css";
 
@@ -17,34 +17,48 @@ class Index extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         // console.log('Received values of form: ', values);
-       this.props.dispatch({
+        this.props.dispatch({
           type: 'main/addProduct',
-          payload:values,
-         callback: () => {
-           this.setState({
-             addShow: "none",
-           });
+          payload: values,
+          callback: () => {
+            message.success('添加成功');
+            this.setState({
+              addShow: "none",
+            });
+
 //刷新
-          this.props.dispatch({
-             type: 'main/getProductList',
-           })
-         },
+            this.props.dispatch({
+              type: 'main/getProductList',
+            })
+            //清空表单
+            this.props.form.resetFields();
+          },
         })
       }
 
     });
   }
 
-  toggleAdd= (e) =>{
-    if(this.state.addShow === "block") {
+  toggleAdd = (e) => {
+    if (this.state.addShow === "block") {
       this.setState({
         addShow: "none"
       })
-    }else {
+      //清空表单
+      this.props.form.resetFields();
+    } else {
       this.setState({
         addShow: "block"
       })
     }
+  }
+
+  edite = () => {
+
+
+  }
+  delConfirm=()=>{
+    alert("删除")
   }
 
   render() {
@@ -54,7 +68,7 @@ class Index extends React.Component {
     const {productInfo} = main
     const {dataInfo} = productInfo
     const addProductInfo = main.addProductInfo
-    const  addSuccess = addProductInfo.success;
+    const addSuccess = addProductInfo.success;
 
     const columns = [{
       title: 'ID',
@@ -78,7 +92,19 @@ class Index extends React.Component {
       dataIndex: 'cost',
       key: 'cost',
       sorter: (a, b) => a.cost - b.cost
-    }];
+    }, {
+      title: '操作',
+      key: 'operation',
+      fixed: 'right',
+      width: 100,
+      render: () => <div><Button onClick={this.edite}>编辑</Button>
+        {/*<Popconfirm title="确定删除"*/}
+                    {/*onConfirm={this.delConfirm}*/}
+                    {/*okText="确定" cancelText="取消">*/}
+          {/*<Button>删除</Button>*/}
+      {/*</Popconfirm>*/}
+      </div>,
+    },];
     const dataSource = dataInfo.map((item, index) => {
       return {
         key: index,
@@ -97,8 +123,8 @@ class Index extends React.Component {
         </Breadcrumb>
         <Button onClick={this.toggleAdd} icon="plus" type="primary">添加</Button>
         <Table pagination={{pageSize: 5}} columns={columns} dataSource={dataSource}/>
-        <div id={style.cover} style={{display:this.state.addShow}}>
-          <div id={style.addCon} >
+        <div id={style.cover} style={{display: this.state.addShow}}>
+          <div id={style.addCon}>
             <Form onSubmit={this.handleSubmit} className="login-form">
 
               <Form.Item>

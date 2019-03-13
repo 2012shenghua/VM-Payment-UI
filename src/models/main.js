@@ -1,7 +1,7 @@
 import {
   login, getGroup, getProductList,
   getMachineModelList,
-  getSellMachineList, getPayInfoList,addProduct
+  getSellMachineList, getPayInfoList,addProduct,addSellMachine
 } from '../services/request'
 import {Modal} from 'antd'
 
@@ -243,7 +243,7 @@ export default {
             "type": "all"
           },
           "orderBy": "name",
-          "descending": false
+            "descending": false
         },
         "bestEffortLimit": 200
       }
@@ -256,6 +256,26 @@ export default {
           machineModelInfo
         }
       })
+    },
+    // 创建售货机
+    * addSellMachine({payload,callback}, {call, put, select}) {
+      const loginInfo = yield select(state => state.main.loginInfo)
+      const groupMsg = yield select(state => state.main.groupMsg)
+      const addProductInfo = yield select(state => state.main.addProductInfo)
+      const Authorization = 'Bearer ' + loginInfo.access_token
+      const api_params = '/' + groupMsg.groupID + '/buckets/product/objects'
+      // const params = payload;
+      const params ={
+
+      }
+      const data = yield call(addSellMachine, api_params, params, header_params(loginInfo))
+      if (!data.objectID) return;
+
+      callback();//回调影藏控件
+
+
+
+
     },
     // 支付信息
     * getPayInfoList({payload}, {call, put, select}) {

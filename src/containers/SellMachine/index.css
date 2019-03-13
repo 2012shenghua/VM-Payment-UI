@@ -1,0 +1,27 @@
+#cover{
+  background: rgba(0,0,0,0.4);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0
+}
+#addCon{
+
+  background: white;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50px;
+  width: 400px;
+  text-align: center;
+  padding:50px 0 ;
+  border-radius: 10px;
+  margin: auto;
+
+}
+.inputs{
+
+  width: 300px;
+
+}
