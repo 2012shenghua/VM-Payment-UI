@@ -98,7 +98,7 @@ class Index extends React.Component {
     const {dataInfo} = payInfo
     console.log("产品信息" + JSON.stringify(productInfo), "售货机信息" + JSON.stringify(sellMachineInfo))
 
-    const productOptions = productInfo.dataInfo.map(obj => <Option key={obj.name}>{obj.name}</Option>);
+    const productOptions = productInfo.dataInfo.map(obj => <Option key={obj._id}>{obj.name}</Option>);
     const machineOptions = sellMachineInfo.dataInfo.map(obj => <Option
       key={obj._vendorThingID}>{obj._vendorThingID}</Option>);
 

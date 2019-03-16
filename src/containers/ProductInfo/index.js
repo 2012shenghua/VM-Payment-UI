@@ -3,19 +3,25 @@ import {Breadcrumb, Icon, Table, Button, Input, Form, Popconfirm, message} from 
 import {connect} from 'dva';
 import style from "./index.css";
 
+const addBtns = ["添加", "取消"];
+const editeBtns = ["修改", "取消"]
+
 class Index extends React.Component {
   constructor() {
     super();
     this.state = {
-      addShow: "none"
+      addShow: "none",
+      btnNames: addBtns
     };
 
+    this.productId = "";
   }
 
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
-      if (!err) {
+      if(err) return;
+      if (this.state.btnNames == addBtns) {//add
         // console.log('Received values of form: ', values);
         this.props.dispatch({
           type: 'main/addProduct',
@@ -35,11 +41,32 @@ class Index extends React.Component {
           },
         })
       }
+      if (this.state.btnNames == editeBtns) {//edit
+
+        // console.log('Received values of form: ', values);
+        this.props.dispatch({
+          type: 'main/editProduct',
+          payload: {values:values,productId:this.productId},
+          callback: () => {
+            message.success('修改成功');
+            this.setState({
+              addShow: "none",
+            });
+
+//刷新
+            this.props.dispatch({
+              type: 'main/getProductList',
+            })
+            //清空表单
+            this.props.form.resetFields();
+          },
+        })
+      }
 
     });
   }
 
-  toggleAdd = (e) => {
+  toggleAdd = () => {
     if (this.state.addShow === "block") {
       this.setState({
         addShow: "none"
@@ -52,12 +79,29 @@ class Index extends React.Component {
       })
     }
   }
+  add = () => {
+    this.setState({
+      btnNames: addBtns
+    })
+    this.toggleAdd();
+  }
+  edite = (text) => {
+    this.props.form.setFieldsValue({name:text.name,cost:text.cost,price:text.price});
 
-  edite = () => {
+    // console.log(text)
+    this.setState({
+      btnNames: editeBtns,
 
+    });
+   this.productId = text.id
+    this.toggleAdd();
+    // this.props.dispatch({
+    //     type: 'main/editProduct'
+    //   }
+    // )
 
   }
-  delConfirm=()=>{
+  delConfirm = () => {
     alert("删除")
   }
 
@@ -97,12 +141,12 @@ class Index extends React.Component {
       key: 'operation',
       fixed: 'right',
       width: 100,
-      render: () => <div><Button onClick={this.edite}>编辑</Button>
+      render: (text, record) => <div><Button onClick={(record) => this.edite(text, record)}>编辑</Button>
         {/*<Popconfirm title="确定删除"*/}
-                    {/*onConfirm={this.delConfirm}*/}
-                    {/*okText="确定" cancelText="取消">*/}
-          {/*<Button>删除</Button>*/}
-      {/*</Popconfirm>*/}
+        {/*onConfirm={this.delConfirm}*/}
+        {/*okText="确定" cancelText="取消">*/}
+        {/*<Button>删除</Button>*/}
+        {/*</Popconfirm>*/}
       </div>,
     },];
     const dataSource = dataInfo.map((item, index) => {
@@ -121,7 +165,7 @@ class Index extends React.Component {
         <Breadcrumb style={{marginBottom: 10}}>
           <Breadcrumb.Item>产品信息</Breadcrumb.Item>
         </Breadcrumb>
-        <Button onClick={this.toggleAdd} icon="plus" type="primary">添加</Button>
+        <Button style={{marginBottom:10}} onClick={this.toggleAdd} icon="plus" type="primary">添加</Button>
         <Table pagination={{pageSize: 5}} columns={columns} dataSource={dataSource}/>
         <div id={style.cover} style={{display: this.state.addShow}}>
           <div id={style.addCon}>
@@ -148,10 +192,10 @@ class Index extends React.Component {
               )}
             </Form.Item>
               <Form.Item>
-                <Button type="primary" htmlType="submit" className={style.inputs}>添加</Button>
+                <Button type="primary" htmlType="submit" className={style.inputs}>{this.state.btnNames[0]}</Button>
               </Form.Item>
               <Form.Item>
-                <Button onClick={this.toggleAdd} className={style.inputs}>取消</Button>
+                <Button onClick={this.add} className={style.inputs}>{this.state.btnNames[1]}</Button>
               </Form.Item>
             </Form>
           </div>

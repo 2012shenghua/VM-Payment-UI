@@ -1,9 +1,11 @@
 import {
   login, getGroup, getProductList,
   getMachineModelList,
-  getSellMachineList, getPayInfoList,addProduct,addSellMachine
+  getSellMachineList, getPayInfoList,addProduct,addSellMachine,editProduct,delProduct
+  ,editSellMachine
 } from '../services/request'
 import {Modal} from 'antd'
+import base64 from 'base-64'
 
 const login1 = async (params) => {
   return await new Promise((resolve, reject) => {
@@ -23,6 +25,29 @@ const header_params = (loginInfo) => {
   return {
     Authorization: `${loginInfo.token_type} ${loginInfo.access_token}`,
     'Content-Type': 'application/vnd.kii.QueryRequest+json'
+  }
+}
+
+const addmachin_header_params = (loginInfo) => {
+  console.log(base64.encode(`3xr2fxuy9lpn:1122`))
+  return {
+    Authorization:base64.encode(`${loginInfo.token_type}:${loginInfo.access_token}`),
+    'Content-Type': 'application/vnd.kii.ThingRegistrationAndAuthorizationRequest+json'
+  }
+}
+
+const ediitProduct_header_params = (loginInfo) => {
+  return {
+    Authorization: `${loginInfo.token_type} ${loginInfo.access_token}`,
+    // 'Content-Type': 'application/vnd.kii.QueryRequest+json',
+    "X-HTTP-Method-Override":"PATCH"
+  }
+}
+const delProduct_header_params = (loginInfo) => {
+  return {
+    Authorization: `${loginInfo.token_type} ${loginInfo.access_token}`
+    // ,"If-Match": 1
+
   }
 }
 const headerSell = (loginInfo) => {
@@ -212,16 +237,40 @@ export default {
       const api_params = '/' + groupMsg.groupID + '/buckets/product/objects'
       const params = payload;
       const data = yield call(addProduct, api_params, params, header_params(loginInfo))
-      if (!data.objectID) return;
+      if (!data || !data.objectID) return;
 
       callback();//回调影藏控件
+    },
+    // 删除产品
+    * delProduct({payload,callback}, {call, put, select}) {
+      const loginInfo = yield select(state => state.main.loginInfo)
+      const groupMsg = yield select(state => state.main.groupMsg)
+      const addProductInfo = yield select(state => state.main.addProductInfo)
+      const Authorization = 'Bearer ' + loginInfo.access_token
+      const api_params = '/' + groupMsg.groupID + '/buckets/product/objects'
+      const params = payload;
+      const data = yield call(delProduct, api_params, params, header_params(loginInfo))
+      if (!data || !data.objectID) return;
 
-
-
-
+      callback();//回调影藏控件
+    },
+    // 编辑产品
+    * editProduct({payload,callback}, {call, put, select}) {
+      const loginInfo = yield select(state => state.main.loginInfo)
+      const groupMsg = yield select(state => state.main.groupMsg)
+      const addProductInfo = yield select(state => state.main.addProductInfo)
+      const Authorization = 'Bearer ' + loginInfo.access_token
+      const api_params = '/' + groupMsg.groupID + '/buckets/product/objects/'+payload.productId
+      const params = payload.values;
+      const data = yield call(editProduct, api_params, params, ediitProduct_header_params(loginInfo))
+      if (!data || !data._version) return;
+      callback();//回调影藏控件
     },
     * getSellMachineList({payload}, {call, put, select}) {
+
+
       const loginInfo = yield select(state => state.main.loginInfo)
+      addmachin_header_params(loginInfo)
       const groupMsg = yield select(state => state.main.groupMsg)
       const sellMachineInfo = yield select(state => state.main.sellMachineInfo)
       const api_params = 'things/query'
@@ -263,19 +312,44 @@ export default {
       const groupMsg = yield select(state => state.main.groupMsg)
       const addProductInfo = yield select(state => state.main.addProductInfo)
       const Authorization = 'Bearer ' + loginInfo.access_token
-      const api_params = '/' + groupMsg.groupID + '/buckets/product/objects'
+      const api_params = 'things'
       // const params = payload;
-      const params ={
+      const params = payload;
+      const data = yield call(addSellMachine, api_params, params, {
+        "Content-Type":"application/vnd.kii.ThingRegistrationAndAuthorizationRequest+json",
+          "Authorization":Authorization
+      });
+      if (data) {
 
-      }
-      const data = yield call(addSellMachine, api_params, params, header_params(loginInfo))
-      if (!data.objectID) return;
+          //添加售货机到group
+        const api_params2 = "things/"+data._thingID+"/ownership";
+        const params2 = {
+          "groupID": groupMsg.groupID,
+          "thingPassword": params._password
+        }
+        // https://api-cn3.kii.com/api/apps/3xr2fxuy9lpn/things/th.222300e36100-7de9-9e11-1f74-36af8ae8/ownership
+        const data2 = yield call(addSellMachine, api_params2, params2, {
+          "Content-Type":"application/vnd.kii.ThingOwnershipRequest+json",
+          "Authorization":Authorization
+        });
+        callback();
+      }//if data
 
-      callback();//回调影藏控件
-
-
-
-
+    },
+    // 修改创建售货机
+    * editSellMachine({payload,callback}, {call, put, select}) {
+      const loginInfo = yield select(state => state.main.loginInfo)
+      const groupMsg = yield select(state => state.main.groupMsg)
+      const addProductInfo = yield select(state => state.main.addProductInfo)
+      const Authorization = 'Bearer ' + loginInfo.access_token
+      const api_params = 'things/'+payload._thingID;
+      // const params = payload;
+      const params = {_thingType:payload.values._thingType};
+      const data = yield call(editSellMachine, api_params, params, {
+        "Content-Type": "application/vnd.kii.ThingUpdateRequest+json",
+        "Authorization": Authorization
+      });
+      callback();
     },
     // 支付信息
     * getPayInfoList({payload}, {call, put, select}) {
