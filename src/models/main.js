@@ -94,7 +94,9 @@ export default {
     payInfo: {
       dataInfo: []
     },
-    machineModelInfo: []
+    machineModelInfo: [],
+    productSearchText:"",
+    sellmachineSearchText:""
   },
   subscriptions: {
     setup({dispatch, history}) {  // eslint-disable-line

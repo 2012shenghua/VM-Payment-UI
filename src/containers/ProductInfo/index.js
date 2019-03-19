@@ -2,7 +2,7 @@ import React from 'react'
 import {Breadcrumb, Icon, Table, Button, Input, Form, Popconfirm, message} from 'antd'
 import {connect} from 'dva';
 import style from "./index.css";
-
+const Search = Input.Search;
 const addBtns = ["添加", "取消"];
 const editeBtns = ["修改", "取消"]
 
@@ -104,12 +104,29 @@ class Index extends React.Component {
   delConfirm = () => {
     alert("删除")
   }
+  search = (value)=>{
+   this.props.dispatch({
+      type: 'main/save',
+      payload:{productSearchText:value}
+    })
+
+  }
+  searchChang = (e)=>{
+    const value =  e.target.value
+    this.props.dispatch({
+      type: 'main/save',
+      payload:{productSearchText:value}
+    })
+
+  }
+
 
   render() {
 
     const {getFieldDecorator} = this.props.form;
     const {main} = this.props
     const {productInfo} = main
+    const {productSearchText} = main
     const {dataInfo} = productInfo
     const addProductInfo = main.addProductInfo
     const addSuccess = addProductInfo.success;
@@ -149,7 +166,11 @@ class Index extends React.Component {
         {/*</Popconfirm>*/}
       </div>,
     },];
-    const dataSource = dataInfo.map((item, index) => {
+
+    const constdataSourceFilter = dataInfo.filter(function (item) {
+      return item.name.includes(productSearchText);
+    })
+    const dataSource = constdataSourceFilter.map((item, index) => {
       return {
         key: index,
         id: item._id,
@@ -166,6 +187,13 @@ class Index extends React.Component {
           <Breadcrumb.Item>产品信息</Breadcrumb.Item>
         </Breadcrumb>
         <Button style={{marginBottom:10}} onClick={this.toggleAdd} icon="plus" type="primary">添加</Button>
+        <Search style={{width:200,float:"right"}}
+          placeholder="产品名称"
+          onSearch={this.search}
+                onChange={this.searchChang}
+          enterButton
+
+        />
         <Table pagination={{pageSize: 5}} columns={columns} dataSource={dataSource}/>
         <div id={style.cover} style={{display: this.state.addShow}}>
           <div id={style.addCon}>

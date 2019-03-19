@@ -5,7 +5,7 @@ import { Link } from 'dva/router';
 import moment from 'moment'
 import style from "./index.css";
 const Option = Select.Option;
-
+const Search = Input.Search;
 
 const addBtns = ["添加", "取消"];
 const editeBtns = ["修改", "取消"]
@@ -108,10 +108,29 @@ class Index extends React.Component {
   delConfirm=()=>{
     alert("删除")
   }
+  search = (value)=>{
+    this.props.dispatch({
+      type: 'main/save',
+      payload:{sellmachineSearchText:value}
+    })
+
+  }
+  searchChang = (e)=>{
+    const value =  e.target.value
+    this.props.dispatch({
+      type: 'main/save',
+      payload:{sellmachineSearchText:value}
+    })
+
+  }
+
 
   render() {
+    // const load = this.props.loading.effects['exp/add'];
+    // alert(load)
     const {getFieldDecorator} = this.props.form;
     const { main } = this.props
+    const {sellmachineSearchText} = main
     const { sellMachineInfo, machineModelInfo } = main
     const machineModelOptions = machineModelInfo.map(obj => <Option
       key={obj._id}>{obj.name}</Option>);
@@ -165,7 +184,12 @@ class Index extends React.Component {
         {/*</Popconfirm>*/}
       </div>,
     }];
-    const dataSource = dataInfo.map((item, index) => {
+
+    dataInfo.reverse();
+    const constdataSourceFilter = dataInfo.filter(function (item) {
+      return item._vendorThingID.includes(sellmachineSearchText);
+    })
+    const dataSource = constdataSourceFilter.map((item, index) => {
       const model = Object.keys(machineObj).length > 0 ? machineObj[item._thingType].name : ''
       return {
         key: index,
@@ -183,6 +207,13 @@ class Index extends React.Component {
           <Breadcrumb.Item>售货机</Breadcrumb.Item>
         </Breadcrumb>
         <Button style={{marginBottom:10}} onClick={this.add} icon="plus" type="primary">添加</Button>
+        <Search style={{width:200,float:"right"}}
+                placeholder="售货机名称"
+                onSearch={this.search}
+                onChange={this.searchChang}
+                enterButton
+
+        />
         <Table pagination={{pageSize:5}}
                columns={columns} dataSource={dataSource} />
         <div id={style.cover} style={{display: this.state.addShow}}>
