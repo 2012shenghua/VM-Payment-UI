@@ -21,8 +21,15 @@ class Index extends React.Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if(err) return;
+
+
+      for(let key in values){
+          if(key == "price" || key == "cost"){
+            values[key] = Number(values[key])
+          }
+      }
+
       if (this.state.btnNames == addBtns) {//add
-        // console.log('Received values of form: ', values);
         this.props.dispatch({
           type: 'main/addProduct',
           payload: values,
@@ -170,7 +177,7 @@ class Index extends React.Component {
     const constdataSourceFilter = dataInfo.filter(function (item) {
       return item.name.includes(productSearchText);
     })
-    const dataSource = constdataSourceFilter.map((item, index) => {
+    let dataSource = constdataSourceFilter.map((item, index) => {
       return {
         key: index,
         id: item._id,
@@ -179,6 +186,8 @@ class Index extends React.Component {
         cost: item.cost,
       }
     })
+    //
+    // dataSource = []
 
 
     return (
@@ -208,15 +217,23 @@ class Index extends React.Component {
               </Form.Item>
               <Form.Item>
                 {getFieldDecorator('price', {
-                  rules: [{required: true, message: '请输入产品售价'}],
+                  rules: [{required: true, type:'number', message: '请输入产品售价',transform(value){
+                      if(value){
+                        return Number(value)
+                      }
+                    }}],
                 })(
-                  <Input name="price" placeholder="请输入产品售价" className={style.inputs}/>
+                  <Input type="number" name="price" placeholder="请输入产品售价" className={style.inputs}/>
                 )}
               </Form.Item><Form.Item>
               {getFieldDecorator('cost', {
-                rules: [{required: true, message: '请输入产品成本'}],
+                rules: [{required: true, type:'number', message: '请输入产品成本',transform(value){
+                  if(value){
+                    return Number(value)
+                  }
+                  }}],
               })(
-                <Input name="cost" placeholder="请输入产品成本" className={style.inputs}/>
+                <Input  type="number" name="cost"  placeholder="请输入产品成本" className={style.inputs}/>
               )}
             </Form.Item>
               <Form.Item>

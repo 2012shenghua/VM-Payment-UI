@@ -4,7 +4,7 @@ import {
   getSellMachineList, getPayInfoList, addProduct, addSellMachine, editProduct, delProduct
   , editSellMachine
 } from '../services/request'
-import {Modal} from 'antd'
+import {Modal,message} from 'antd'
 import base64 from 'base-64'
 import moment from "moment"
 
@@ -261,6 +261,9 @@ export default {
       const api_params = '/' + groupMsg.groupID + '/buckets/product/objects'
       const params = payload;
       const data = yield call(addProduct, api_params, params, header_params(loginInfo))
+      if(!data){
+        message.error("添加失败")
+      }
       if (!data || !data.objectID) return;
 
       callback();//回调影藏控件
@@ -287,6 +290,9 @@ export default {
       const api_params = '/' + groupMsg.groupID + '/buckets/product/objects/' + payload.productId
       const params = payload.values;
       const data = yield call(editProduct, api_params, params, ediitProduct_header_params(loginInfo))
+      if(!data){
+        message.error("编辑失败")
+      }
       if (!data || !data._version) return;
       callback();//回调影藏控件
     },
@@ -308,7 +314,7 @@ export default {
         }
       }
       const result = yield call(getSellMachineList, api_params, params, headerSell(loginInfo))
-      sellMachineInfo.dataInfo = result
+      sellMachineInfo.dataInfo = result.reverse();
 
       const paramsM = {
         "bucketQuery": {
@@ -343,6 +349,9 @@ export default {
         "Content-Type": "application/vnd.kii.ThingRegistrationAndAuthorizationRequest+json",
         "Authorization": Authorization
       });
+      if(!data){
+        message.error("添加失败")
+      }
       if (data) {
 
         //添加售货机到group

@@ -1,21 +1,23 @@
 import React from 'react'
-import {Breadcrumb, Button, Form, Icon, Input, message, Table,Select } from 'antd'
-import { connect } from 'dva';
-import { Link } from 'dva/router';
+import {Breadcrumb, Button, Form, Icon, Input, message, Table, Select} from 'antd'
+import {connect} from 'dva';
+import {Link} from 'dva/router';
 import moment from 'moment'
 import style from "./index.css";
+
 const Option = Select.Option;
 const Search = Input.Search;
 
 const addBtns = ["添加", "取消"];
 const editeBtns = ["修改", "取消"]
+
 class Index extends React.Component {
   constructor() {
     super();
     this.state = {
       addShow: "none",
       btnNames: addBtns,
-      edit:false
+      edit: false
     };
 
     this._thingID = "";
@@ -24,8 +26,9 @@ class Index extends React.Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
+    e.stopPropagation()
     this.props.form.validateFields((err, values) => {
-      if(err) return;
+      if (err) return;
       if (this.state.btnNames == addBtns) {//add
         // console.log('Received values of form: ', values);
         this.props.dispatch({
@@ -51,7 +54,7 @@ class Index extends React.Component {
         // console.log('Received values of form: ', values);
         this.props.dispatch({
           type: 'main/editSellMachine',
-          payload: {values:values,_thingID:this._thingID},
+          payload: {values: values, _thingID: this._thingID},
           callback: () => {
             message.success('修改成功');
             this.setState({
@@ -85,43 +88,56 @@ class Index extends React.Component {
     }
   }
 
-  add = () => {
+  add = (e) => {
+
     this.setState({
       btnNames: addBtns,
-      edit:false
+      edit: false
     })
     this.toggleAdd();
   }
 
   edite = (text) => {
 
-    this.props.form.setFieldsValue({_vendorThingID:text.name,_password:"******",_thingType:text._thingType});
+    this.props.form.setFieldsValue({_vendorThingID: text.name, _password: "******", _thingType: text._thingType});
     // console.log(text)
     this.setState({
       btnNames: editeBtns,
-      edit:true
+      edit: true
     });
     this._thingID = text.id;
     this.toggleAdd();
 
   }
-  delConfirm=()=>{
+  delConfirm = () => {
     alert("删除")
   }
-  search = (value)=>{
+  search = (value) => {
     this.props.dispatch({
       type: 'main/save',
-      payload:{sellmachineSearchText:value}
+      payload: {sellmachineSearchText: value}
     })
 
   }
-  searchChang = (e)=>{
-    const value =  e.target.value
+  searchChang = (e) => {
+    const value = e.target.value
     this.props.dispatch({
       type: 'main/save',
-      payload:{sellmachineSearchText:value}
+      payload: {sellmachineSearchText: value}
     })
 
+  }
+
+  //自定义验证售货机名称
+  handleConfirmVendorThingID(rule, value, callback) {
+
+    const reg = /^[a-zA-Z0-9-_\\.]{1,200}$/g;
+    const flag = reg.test(value);
+    if (!flag && value != "") {
+      callback("名称只能输入 数字，英文字符，下划线，中划线或者点'.'")
+    } else {
+      callback()
+    }
   }
 
 
@@ -129,14 +145,14 @@ class Index extends React.Component {
     // const load = this.props.loading.effects['exp/add'];
     // alert(load)
     const {getFieldDecorator} = this.props.form;
-    const { main } = this.props
+    const {main} = this.props
     const {sellmachineSearchText} = main
-    const { sellMachineInfo, machineModelInfo } = main
+    const {sellMachineInfo, machineModelInfo} = main
     const machineModelOptions = machineModelInfo.map(obj => <Option
       key={obj._id}>{obj.name}</Option>);
 
     // alert(JSON.stringify(sellMachineInfo))
-    const { dataInfo } = sellMachineInfo
+    const {dataInfo} = sellMachineInfo
     const machineObj = {}
     machineModelInfo.forEach(e => {
       dataInfo.forEach(_ => {
@@ -185,7 +201,7 @@ class Index extends React.Component {
       </div>,
     }];
 
-    dataInfo.reverse();
+    // dataInfo.reverse();
     const constdataSourceFilter = dataInfo.filter(function (item) {
       return item._vendorThingID.includes(sellmachineSearchText);
     })
@@ -197,7 +213,7 @@ class Index extends React.Component {
         name: item._vendorThingID,
         model,
         time: item._created,
-        _thingType:item._thingType
+        _thingType: item._thingType
       }
     })
 
@@ -206,49 +222,54 @@ class Index extends React.Component {
         <Breadcrumb style={{marginBottom: 10}}>
           <Breadcrumb.Item>售货机</Breadcrumb.Item>
         </Breadcrumb>
-        <Button style={{marginBottom:10}} onClick={this.add} icon="plus" type="primary">添加</Button>
-        <Search style={{width:200,float:"right"}}
+        <Button style={{marginBottom: 10}} onClick={this.add} icon="plus" type="primary">添加</Button>
+        <Search style={{width: 200, float: "right"}}
                 placeholder="售货机名称"
                 onSearch={this.search}
                 onChange={this.searchChang}
                 enterButton
 
         />
-        <Table pagination={{pageSize:5}}
-               columns={columns} dataSource={dataSource} />
+        <Table pagination={{pageSize: 5}}
+               columns={columns} dataSource={dataSource}/>
         <div id={style.cover} style={{display: this.state.addShow}}>
           <div id={style.addCon}>
             <Form onSubmit={this.handleSubmit} className="login-form">
 
               <Form.Item>
                 {getFieldDecorator('_vendorThingID', {
-                  rules: [{required: true, message: '请输入售货机名称'}],
+                  rules: [
+                    {required: true, message: '请输入售货机名称'},
+                    // {regexp: /[a-zA-Z0-9-_\\.]{1,200}/,message:"名称只能输入 数字，英文字符，下划线，中划线或者点'.'"}
+                    {validator: this.handleConfirmVendorThingID}
+                  ],
                 })(
-                  <Input disabled={this.state.edit} name="_vendorThingID" placeholder="请输入售货机名称" className={style.inputs}/>
+                  <Input disabled={this.state.edit} name="_vendorThingID" placeholder="请输入售货机名称"
+                         className={style.inputs}/>
                 )}
               </Form.Item>
               <Form.Item>
                 {getFieldDecorator('_password', {
                   rules: [{required: true, message: '请输入售货机密码'}],
                 })(
-                  <Input  disabled={this.state.edit} name="_password" placeholder="请输入售货机密码" className={style.inputs}/>
+                  <Input disabled={this.state.edit} name="_password" placeholder="请输入售货机密码" className={style.inputs}/>
                 )}
               </Form.Item>
               <Form.Item>
-              {getFieldDecorator('_thingType', {
-              rules: [{required: true, message: '请选择售货机型号'}],
-              })(
-                <Select style={{width:300}} placeholder="请选择售货机型号"  >
-                  {machineModelOptions}
-                </Select>
-              )}
-            </Form.Item>
+                {getFieldDecorator('_thingType', {
+                  rules: [{required: true, message: '请选择售货机型号'}],
+                })(
+                  <Select style={{width: 300}} placeholder="请选择售货机型号">
+                    {machineModelOptions}
+                  </Select>
+                )}
+              </Form.Item>
               <Form.Item>
                 <Button type="primary" htmlType="submit" className={style.inputs}>{this.state.btnNames[0]}</Button>
               </Form.Item>
               <Form.Item>
-              <Button onClick={this.add} className={style.inputs}>{this.state.btnNames[1]}</Button>
-            </Form.Item>
+                <Button onClick={this.add} className={style.inputs}>{this.state.btnNames[1]}</Button>
+              </Form.Item>
             </Form>
           </div>
         </div>
@@ -258,9 +279,11 @@ class Index extends React.Component {
   }
 
 }
+
 function mapStateToProps(state) {
-  return { main: state.main };
+  return {main: state.main};
 }
+
 const com = Form.create({name: 'normal_login'})(Index);
 
 export default connect(mapStateToProps)(com);
