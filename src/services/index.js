@@ -1,14 +1,19 @@
 import axios from 'axios'
 import {Modal} from 'antd'
+import {appID,appKey} from "../mainUti";
 // import {CasServerUrl, JavaServerHost} from "../common/const/config";
 
 //携带cookie
 axios.defaults.withCredentials = false;
 
 const className = 'charles-not-login-modal';
+// const head_app = {
+//   'X-Kii-AppID' : '3xr2fxuy9lpn',
+//   'X-Kii-AppKey': '0212b3b2780a44dabf99b8e72ea8dd6c'
+// }
 const head_app = {
-  'X-Kii-AppID' : '3xr2fxuy9lpn',
-  'X-Kii-AppKey': '0212b3b2780a44dabf99b8e72ea8dd6c'
+  'X-Kii-AppID' : appID,
+  'X-Kii-AppKey': appKey
 }
 axios.interceptors.response.use(config => {
   return config;

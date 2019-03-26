@@ -1,11 +1,12 @@
 import {
   login, getGroup, getProductList,
   getMachineModelList,
-  getSellMachineList, getPayInfoList,addProduct,addSellMachine,editProduct,delProduct
-  ,editSellMachine
+  getSellMachineList, getPayInfoList, addProduct, addSellMachine, editProduct, delProduct
+  , editSellMachine
 } from '../services/request'
 import {Modal} from 'antd'
 import base64 from 'base-64'
+import moment from "moment"
 
 const login1 = async (params) => {
   return await new Promise((resolve, reject) => {
@@ -29,9 +30,9 @@ const header_params = (loginInfo) => {
 }
 
 const addmachin_header_params = (loginInfo) => {
-  console.log(base64.encode(`3xr2fxuy9lpn:1122`))
+  // console.log(base64.encode(`3xr2fxuy9lpn:1122`))
   return {
-    Authorization:base64.encode(`${loginInfo.token_type}:${loginInfo.access_token}`),
+    Authorization: base64.encode(`${loginInfo.token_type}:${loginInfo.access_token}`),
     'Content-Type': 'application/vnd.kii.ThingRegistrationAndAuthorizationRequest+json'
   }
 }
@@ -40,7 +41,7 @@ const ediitProduct_header_params = (loginInfo) => {
   return {
     Authorization: `${loginInfo.token_type} ${loginInfo.access_token}`,
     // 'Content-Type': 'application/vnd.kii.QueryRequest+json',
-    "X-HTTP-Method-Override":"PATCH"
+    "X-HTTP-Method-Override": "PATCH"
   }
 }
 const delProduct_header_params = (loginInfo) => {
@@ -84,9 +85,9 @@ export default {
     productInfo: {
       dataInfo: []
     },
-    addProductInfo:{
+    addProductInfo: {
       dataInfo: [],
-      success:false
+      success: false
     },
     sellMachineInfo: {
       dataInfo: []
@@ -95,8 +96,8 @@ export default {
       dataInfo: []
     },
     machineModelInfo: [],
-    productSearchText:"",
-    sellmachineSearchText:""
+    productSearchText: "",
+    sellmachineSearchText: ""
   },
   subscriptions: {
     setup({dispatch, history}) {  // eslint-disable-line
@@ -123,8 +124,28 @@ export default {
           })
         }
         if (location.pathname === '/payInfo') {
+          const param = {//支付信息默认当天
+            "bucketQuery": {
+              "clause": {
+                "type": "and",
+                "clauses": [{"type": "eq", "field": "status", "value": "success"},
+                  {
+                    "type": "range",
+                    "field": "_created",
+                    "upperLimit": moment().endOf("day").valueOf(),
+                    "upperIncluded": true,
+                    "lowerLimit": moment().startOf("day").valueOf(),
+                    "lowerIncluded": true
+                  }
+                ]
+              },
+              "descending": true, "orderBy": "_created"
+            },
+            "bestEffortLimit": 200
+          };
           dispatch({
-            type: 'getPayInfoList'
+            type: 'getPayInfoList',
+            payload: {param: param}
           })
           dispatch({
             type: 'getProductList',
@@ -143,6 +164,7 @@ export default {
       return {...state, ...action.payload};
     },
     save(state, action) {
+      // console.log(state)
       return {...state, ...action.payload};
     },
     login(state, action) {
@@ -231,7 +253,7 @@ export default {
       })
     },
     // 创建产品
-    * addProduct({payload,callback}, {call, put, select}) {
+    * addProduct({payload, callback}, {call, put, select}) {
       const loginInfo = yield select(state => state.main.loginInfo)
       const groupMsg = yield select(state => state.main.groupMsg)
       const addProductInfo = yield select(state => state.main.addProductInfo)
@@ -244,7 +266,7 @@ export default {
       callback();//回调影藏控件
     },
     // 删除产品
-    * delProduct({payload,callback}, {call, put, select}) {
+    * delProduct({payload, callback}, {call, put, select}) {
       const loginInfo = yield select(state => state.main.loginInfo)
       const groupMsg = yield select(state => state.main.groupMsg)
       const addProductInfo = yield select(state => state.main.addProductInfo)
@@ -257,12 +279,12 @@ export default {
       callback();//回调影藏控件
     },
     // 编辑产品
-    * editProduct({payload,callback}, {call, put, select}) {
+    * editProduct({payload, callback}, {call, put, select}) {
       const loginInfo = yield select(state => state.main.loginInfo)
       const groupMsg = yield select(state => state.main.groupMsg)
       const addProductInfo = yield select(state => state.main.addProductInfo)
       const Authorization = 'Bearer ' + loginInfo.access_token
-      const api_params = '/' + groupMsg.groupID + '/buckets/product/objects/'+payload.productId
+      const api_params = '/' + groupMsg.groupID + '/buckets/product/objects/' + payload.productId
       const params = payload.values;
       const data = yield call(editProduct, api_params, params, ediitProduct_header_params(loginInfo))
       if (!data || !data._version) return;
@@ -294,7 +316,7 @@ export default {
             "type": "all"
           },
           "orderBy": "name",
-            "descending": false
+          "descending": false
         },
         "bestEffortLimit": 200
       }
@@ -309,7 +331,7 @@ export default {
       })
     },
     // 创建售货机
-    * addSellMachine({payload,callback}, {call, put, select}) {
+    * addSellMachine({payload, callback}, {call, put, select}) {
       const loginInfo = yield select(state => state.main.loginInfo)
       const groupMsg = yield select(state => state.main.groupMsg)
       const addProductInfo = yield select(state => state.main.addProductInfo)
@@ -318,35 +340,35 @@ export default {
       // const params = payload;
       const params = payload;
       const data = yield call(addSellMachine, api_params, params, {
-        "Content-Type":"application/vnd.kii.ThingRegistrationAndAuthorizationRequest+json",
-          "Authorization":Authorization
+        "Content-Type": "application/vnd.kii.ThingRegistrationAndAuthorizationRequest+json",
+        "Authorization": Authorization
       });
       if (data) {
 
-          //添加售货机到group
-        const api_params2 = "things/"+data._thingID+"/ownership";
+        //添加售货机到group
+        const api_params2 = "things/" + data._thingID + "/ownership";
         const params2 = {
           "groupID": groupMsg.groupID,
           "thingPassword": params._password
         }
         // https://api-cn3.kii.com/api/apps/3xr2fxuy9lpn/things/th.222300e36100-7de9-9e11-1f74-36af8ae8/ownership
         const data2 = yield call(addSellMachine, api_params2, params2, {
-          "Content-Type":"application/vnd.kii.ThingOwnershipRequest+json",
-          "Authorization":Authorization
+          "Content-Type": "application/vnd.kii.ThingOwnershipRequest+json",
+          "Authorization": Authorization
         });
         callback();
       }//if data
 
     },
     // 修改创建售货机
-    * editSellMachine({payload,callback}, {call, put, select}) {
+    * editSellMachine({payload, callback}, {call, put, select}) {
       const loginInfo = yield select(state => state.main.loginInfo)
       const groupMsg = yield select(state => state.main.groupMsg)
       const addProductInfo = yield select(state => state.main.addProductInfo)
       const Authorization = 'Bearer ' + loginInfo.access_token
-      const api_params = 'things/'+payload._thingID;
+      const api_params = 'things/' + payload._thingID;
       // const params = payload;
-      const params = {_thingType:payload.values._thingType};
+      const params = {_thingType: payload.values._thingType};
       const data = yield call(editSellMachine, api_params, params, {
         "Content-Type": "application/vnd.kii.ThingUpdateRequest+json",
         "Authorization": Authorization
@@ -355,7 +377,7 @@ export default {
     },
     // 支付信息
     * getPayInfoList({payload}, {call, put, select}) {
-      console.log(JSON.stringify(payload))
+      // console.log(JSON.stringify(payload))
       const loginInfo = yield select(state => state.main.loginInfo)
       const groupMsg = yield select(state => state.main.groupMsg)
       const payInfo = yield select(state => state.main.payInfo)
@@ -365,7 +387,8 @@ export default {
         "bucketQuery": {
           "clause": {
             "type": "eq", "field": "status", "value": "success"
-          }
+          },
+          "descending": true, "orderBy": "_created"
         }
       }
       if (payload && payload.param) {

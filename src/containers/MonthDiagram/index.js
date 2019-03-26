@@ -75,11 +75,12 @@ class Index extends React.Component {
     let param = {
       "bucketQuery": {
         "clause": {
-          "type": issearch ? "and" : "all",
+          "type": "and",
+          "clauses":[{"type": "eq", "field": "status", "value": "success"}]
         },
         "orderBy": "name", "descending": false
       },
-      "bestEffortLimit": 100
+      "bestEffortLimit": 200
     };
     let clause = param.bucketQuery.clause;
 
@@ -164,7 +165,7 @@ class Index extends React.Component {
             let arr = [];
             for (let key2 in g_dateDics) {
               if (g_dateDics[key2][value]) {
-                arr.push(g_dateDics[key2][value]["price"])
+                arr.push((g_dateDics[key2][value]["price"]).toFixed(2))
               } else {
                 arr.push(0)
               }
@@ -199,9 +200,12 @@ class Index extends React.Component {
         tooltip: {
           trigger: 'axis'
         },
-        legend: {
-          data: g_machineNameArr
-        },
+      legend: {
+        data: g_productNameArr
+      },
+        // legend: {
+        //   data: g_machineNameArr
+        // },
         grid: {
           left: '3%',
           right: '4%',
@@ -214,6 +218,7 @@ class Index extends React.Component {
           }
         },
         xAxis: {
+          name: "日期",
           type: 'category',
           boundaryGap: false,
           data: Object.keys(g_dateDics)
@@ -229,7 +234,7 @@ class Index extends React.Component {
             let arr = [];
             for (let key2 in g_dateDics) {
               if (g_dateDics[key2][value]) {
-                arr.push(g_dateDics[key2][value]["price"] - g_dateDics[key2][value]["cost"])
+                arr.push((g_dateDics[key2][value]["price"] - g_dateDics[key2][value]["cost"]).toFixed(2))
               } else {
                 arr.push(0)
               }
@@ -331,17 +336,20 @@ class Index extends React.Component {
     const columns = [{
       title: '产品',
       dataIndex: 'name',
-      render: text => <a href="javascript:;">{text}</a>,
+      // render: text => <a href="javascript:;">{text}</a>,
     }, {
       title: '数量',
       className: 'number',
       dataIndex: 'number',
+      sorter: (a, b) => a.number - b.number
     }, {
       title: '销售额',
       dataIndex: 'price',
+      sorter: (a, b) => a.price - b.price
     }, {
       title: '利润',
       dataIndex: 'profit',
+      sorter: (a, b) => a.profit - b.profit
     }];
 
     let data = [];
@@ -362,9 +370,9 @@ class Index extends React.Component {
       let dic = {
         key: index,
         name: value,
-        price: price,
-        profit: profit,
-        number: num
+        price: price.toFixed(2),
+        profit: profit.toFixed(2),
+        number: num.toFixed(2)
       }
 
       data.push(dic);
@@ -375,17 +383,20 @@ class Index extends React.Component {
     const columns2 = [{
       title: '售货机',
       dataIndex: 'vendor_thing_id',
-      render: text => <a href="javascript:;">{text}</a>,
+      // render: text => <a href="javascript:;">{text}</a>,
     }, {
       title: '出货量',
       className: 'column-money',
       dataIndex: 'number',
+      sorter: (a, b) => a.number - b.number
     }, {
       title: '销售额',
       dataIndex: 'price',
+      sorter: (a, b) => a.price - b.price
     }, {
       title: '利润',
       dataIndex: 'profit',
+      sorter: (a, b) => a.profit - b.profit
     }];
 
     let data2 = [];
@@ -406,9 +417,9 @@ class Index extends React.Component {
       let dic = {
         key: index,
         vendor_thing_id: value,
-        price: price,
-        profit: profit,
-        number: num
+        price: price.toFixed(2),
+        profit: profit.toFixed(2),
+        number: num.toFixed(2)
       }
 
       data2.push(dic);
@@ -430,9 +441,10 @@ class Index extends React.Component {
             <span>{(price - cost).toFixed(2)}</span>
           </div>
         </section>
-        <Tabs size="large" type="card" style={{width: "100%"}}>
+        <Tabs  type="card" style={{width: "100%"}}>
           <TabPane tab="销售及利润曲线" key="1">
             <div id="chartTop" style={{height: 200}}></div>
+            <div style={{height:1,background:'rgba(0,0,0,0.1)',margin:'15px 0'}}></div>
             <div id="chartBottom" style={{height: 200}}></div>
           </TabPane>
           <TabPane tab="产品报表" key="2">

@@ -14,8 +14,8 @@ class Index extends React.Component {
   dateChange(date, dateString) {
 
     if(date.length >= 2){
-      let start = date[0].valueOf();
-      let end = date[1].valueOf();
+      let start = moment(date[0]).startOf("day").valueOf();
+      let end = moment(date[1]).endOf("day").valueOf();
       inputData.range = {start:start,end:end};
     }else{
        delete  inputData.range
@@ -26,13 +26,21 @@ class Index extends React.Component {
 
   productChange(value) {
 
+  if(value != "全部"){
     inputData.product = value;
+  }else {
+    delete  inputData.product
+  }
 
   }
 
   machinChange(value) {
 
-    inputData.machin = value;
+    if(value != "全部") {
+      inputData.machin = value;
+    }else {
+      delete inputData.machin
+    }
 
 
   }
@@ -42,11 +50,12 @@ class Index extends React.Component {
     let param = {
       "bucketQuery": {
         "clause": {
-          "type": issearch ? "and" : "all",
+          "type": "and" ,
+          "clauses":[{"type": "eq", "field": "status", "value": "success"}]
         },
-        "orderBy": "name", "descending": false
+        "descending": true, "orderBy": "_created"
       },
-      "bestEffortLimit": 100
+      "bestEffortLimit": 200
     };
     let clause = param.bucketQuery.clause;
     if (inputData.machin) {
@@ -60,7 +69,7 @@ class Index extends React.Component {
     }
     if (inputData.product) {
       let clause1 = {
-        "type": "eq", "field": "product",
+        "type": "eq", "field": "product_id",
         "value": inputData.product
       }
       clause.clauses = clause.clauses ? clause.clauses : [];
@@ -96,12 +105,13 @@ class Index extends React.Component {
     const {main} = this.props
     const {payInfo, productInfo, sellMachineInfo} = main
     const {dataInfo} = payInfo
-    console.log("产品信息" + JSON.stringify(productInfo), "售货机信息" + JSON.stringify(sellMachineInfo))
+    // console.log("产品信息" + JSON.stringify(productInfo), "售货机信息" + JSON.stringify(sellMachineInfo))
 
-    const productOptions = productInfo.dataInfo.map(obj => <Option key={obj._id}>{obj.name}</Option>);
-    const machineOptions = sellMachineInfo.dataInfo.map(obj => <Option
-      key={obj._vendorThingID}>{obj._vendorThingID}</Option>);
-
+    let productOptions = productInfo.dataInfo.map(obj => <Option key={obj._id}>{obj.name}</Option>);
+    productOptions.unshift(<Option key="全部">全部</Option>);//加入空的
+    let machineOptions = sellMachineInfo.dataInfo.map(obj => <Option
+      key={obj._vendorThingID}>{obj._vendorThingID}</Option>);//加入空的
+    machineOptions.unshift( <Option key="全部">全部</Option>);
     const dataSource = dataInfo.map((item, index) => {
       return {
         key: index,
@@ -112,7 +122,7 @@ class Index extends React.Component {
         price: item.price,
         product: item.product,
         canister_id: item.canister_id,
-        machine: item.machine,
+        machine: item.vendor_thing_id,
         payment_channel: item.payment_channel,
         out_trade_no: item.out_trade_no
       }
@@ -161,18 +171,18 @@ class Index extends React.Component {
         <div id={style.con}>
           <div className={style.topCon}>
             <div className={style.title}>日期范围</div>
-            <RangePicker placeholder={["起始日期","结束日期"]} onChange={this.dateChange} id={style.dateRange}/>
+            <RangePicker defaultValue={[moment(),moment()]} placeholder={["起始日期","结束日期"]} onChange={this.dateChange} id={style.dateRange}/>
           </div>
 
           <div className={style.topCon}>
             <div className={style.title}>售货机</div>
-            <Select onChange={this.machinChange} className={style.select} defaultValue="">
+            <Select defaultValue="全部" onChange={this.machinChange} className={style.select}>
               {machineOptions}
             </Select>
           </div>
           <div className={style.topCon}>
             <div className={style.title}>产品</div>
-              <Select onChange={this.productChange} className={style.select}>
+              <Select defaultValue="全部" onChange={this.productChange} className={style.select}>
                 {productOptions}
               </Select>
           </div>

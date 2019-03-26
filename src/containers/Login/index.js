@@ -34,7 +34,7 @@ let remember = {username:"",password:"",check:false};
   }
 
   handleUsername(e){
-    console.log(e.target.value)
+    // console.log(e.target.value)
     param.username = e.target.value;
     remember.username = e.target.value;
   }
