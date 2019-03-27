@@ -30,6 +30,9 @@ class Main extends React.Component {
     localStorage.removeItem("loginInfo");
     window.location.href = "/user/login";
   }
+  changePW(){
+    window.location.href = "/user/changePassword";
+  }
 
   constructor() {
     super();
@@ -42,6 +45,9 @@ class Main extends React.Component {
       <Menu>
         <Menu.Item>
           <a onClick={this.logout}>退出登陆</a>
+        </Menu.Item>
+        <Menu.Item>
+          <a onClick={this.changePW}>修改密码</a>
         </Menu.Item>
       </Menu>
     );

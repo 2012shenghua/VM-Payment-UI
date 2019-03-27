@@ -1,5 +1,5 @@
 import API from './api'
-import {getRequest, postRequestPre, postRequest, sendPost,sendPatch} from './index'
+import {getRequest, postRequestPre, postRequest, sendPost,sendPatch,sendPut} from './index'
 
 export const login = async (params) => {
   return postRequestPre(API.login, params)
@@ -14,6 +14,12 @@ export const getGroup = async (params, header) => {
 export const getProductList = async (api, params, header) => {
   return sendPost(API.groups + api, params, header)
     .then(res => res.data.results)
+}
+
+/*修改密码*/
+export const changePassworld = async (api, params, header) => {
+  return sendPut(API.REQUEST_URL + api, params, header)
+    .then(res => res)
 }
 
 export const addProduct = async (api, params, header) => {

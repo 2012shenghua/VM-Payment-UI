@@ -114,7 +114,13 @@ export const sendPost = (url, params, headers) => {
     }
   )
 }
-
+export const sendPut = (url, params, headers) => {
+  return axios.put(url, params,
+    {
+      headers
+    }
+  )
+}
 
 export const sendPatch = (url, params, headers) => {
   return axios.patch(url, params,

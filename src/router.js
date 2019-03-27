@@ -9,6 +9,7 @@ import SellMachine from './containers/SellMachine/index'
 import PayInfo from './containers/PayInfo/index'
 import MonthDiagram from './containers/MonthDiagram/index'
 import Login from './containers/Login/index'
+import ChangePW from './containers/ChangePW/index'
 import Register from './containers/Register/index'
 
 function RouterConfig({ history }) {
@@ -16,6 +17,7 @@ function RouterConfig({ history }) {
     <Router history={history}>
       <Switch>
         <Route path="/user/login" exact component={Login} />
+        <Route path="/user/changePassword" exact component={ChangePW} />
         <Route path="/user/register" exact component={Register} />
         <Main>
           {/* <Route path="/p" exact component={Exp} /> */}

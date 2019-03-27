@@ -2,7 +2,7 @@ import {
   login, getGroup, getProductList,
   getMachineModelList,
   getSellMachineList, getPayInfoList, addProduct, addSellMachine, editProduct, delProduct
-  , editSellMachine
+  , editSellMachine,changePassworld
 } from '../services/request'
 import {Modal,message} from 'antd'
 import base64 from 'base-64'
@@ -102,7 +102,6 @@ export default {
   subscriptions: {
     setup({dispatch, history}) {  // eslint-disable-line
       history.listen(location => {
-
         let info = getLoginInfo();
         if (info) {
           dispatch({
@@ -223,6 +222,20 @@ export default {
       // yield put({
       //   type: 'getPayInfoList',
       // })
+    },
+    //修改密码
+    * changePassworld({payload,callback}, {call, put, select}) {
+      const loginInfo = yield select(state => state.main.loginInfo)
+      const groupMsg = yield select(state => state.main.groupMsg)
+      const productInfo = yield select(state => state.main.productInfo)
+      const Authorization = 'Bearer ' + loginInfo.access_token
+      const api_params = '/users/me/password';
+      const result = yield call(changePassworld, api_params, payload.param, {
+        "Content-Type": "application/vnd.kii.ChangePasswordRequest+json",
+        "Authorization": Authorization
+      })
+
+      callback(result)
     },
     // 产品信息列表
     * getProductList({payload}, {call, put, select}) {
