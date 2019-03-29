@@ -18,14 +18,15 @@ const head_app = {
 axios.interceptors.response.use(config => {
   return config;
 }, err => {
-  console.log(err.response.data.message)
   Modal.error({
     title: '提示',
     content: (
      <div>{err.response.data.message}</div>
     ),
     onOk() {
-      window.location.href = "/user/login"
+      if (err.response.data.errorCode ==='WRONG_TOKEN') {
+        window.location.href = "/user/login"
+      }
     },
   })
   return Promise.reject('请求异常');
