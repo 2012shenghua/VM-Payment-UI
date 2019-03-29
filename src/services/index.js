@@ -18,8 +18,17 @@ const head_app = {
 axios.interceptors.response.use(config => {
   return config;
 }, err => {
-  console.log(err)
-  return Promise.resolve('请求异常');
+  console.log(err.response.data.message)
+  Modal.error({
+    title: '提示',
+    content: (
+     <div>{err.response.data.message}</div>
+    ),
+    onOk() {
+      window.location.href = "/user/login"
+    },
+  })
+  return Promise.reject('请求异常');
 });
 // axios.interceptors.response.use(data => {
 //   if (data.data.code === 202) {
