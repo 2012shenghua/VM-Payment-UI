@@ -47,7 +47,7 @@ class Main extends React.Component {
           <a onClick={this.changePW}>修改密码</a>
         </Menu.Item>
         <Menu.Item>
-          <a onClick={this.logout}>退出登陆</a>
+          <a onClick={this.logout}>退出登录</a>
         </Menu.Item>
 
       </Menu>

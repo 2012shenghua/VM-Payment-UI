@@ -169,7 +169,7 @@ class Index extends React.Component {
       key: 'id',
       width: 500,
       sorter(a, b) {
-        return a.id.length - b.id.length
+        return a.id.length > b.id.length
       }
     }, {
       title: '名称',
