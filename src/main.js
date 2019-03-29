@@ -5,7 +5,7 @@ import {connect} from 'dva'
 import style from './app.css'
 import {footerText} from "./mainUti"
 import {logPath} from "./mainUti";
-import logo from "./assets/yay.jpg"
+import logo from "./assets/logo.jpg"
 const {Header, Sider, Content, Footer} = Layout;
 const logoStyle = {
   'height': '32px',
@@ -44,11 +44,12 @@ class Main extends React.Component {
     const menu = (
       <Menu>
         <Menu.Item>
-          <a onClick={this.logout}>退出登陆</a>
-        </Menu.Item>
-        <Menu.Item>
           <a onClick={this.changePW}>修改密码</a>
         </Menu.Item>
+        <Menu.Item>
+          <a onClick={this.logout}>退出登陆</a>
+        </Menu.Item>
+
       </Menu>
     );
     return (

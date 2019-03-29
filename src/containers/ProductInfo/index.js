@@ -22,7 +22,7 @@ class Index extends React.Component {
     this.props.form.validateFields((err, values) => {
       if(err) return;
 
-
+      values.currency = "CNY";
       for(let key in values){
           if(key == "price" || key == "cost"){
             values[key] = Number(values[key])

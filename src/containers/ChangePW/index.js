@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  Form, Icon, Input, Button, Checkbox,message
+  Form, Icon, Input, Button, Checkbox,message,Modal
 } from 'antd';
 import APP from '../../app.css'
 import style from "./index.css"
@@ -31,17 +31,18 @@ let remember = {username:"",password:"",check:false};
           callback:function (res) {
             // alert(JSON.stringify(res))
             if(res && res.status) {
-              message.success("修改密码成功");
-              //登录成功移除token修改登录密码
-              let rememberTemp = JSON.parse(localStorage.getItem("remember"))
-              rememberTemp.password = values.newPassword;
-              localStorage.setItem("remember",JSON.stringify(rememberTemp));
+           const moda =  Modal.success({onOk:function () {
+               //登录成功移除token修改登录密码
+               let rememberTemp = JSON.parse(localStorage.getItem("remember"))
+               rememberTemp.password = values.newPassword;
+               localStorage.setItem("remember",JSON.stringify(rememberTemp));
+               localStorage.removeItem("groupMsg");
+               localStorage.removeItem("loginInfo");
+               window.location.href = "/user/login"
 
-              localStorage.removeItem("groupMsg");
-              localStorage.removeItem("loginInfo");
-              setTimeout(function () {
-                window.location.href = "/user/login"
-              },500)
+             },okText:"确认",content:"修改成功，请重新登录"});
+
+
             }else{
               message.error("修改密码失败")
             }
