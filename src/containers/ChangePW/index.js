@@ -34,7 +34,7 @@ let remember = {username:"",password:"",check:false};
            const moda =  Modal.success({onOk:function () {
                //登录成功移除token修改登录密码
               let rememberTemp = JSON.parse(localStorage.getItem("remember"))
-              if (typeof rememberTemp === 'object' && typeof values === 'object') {
+              if (rememberTemp) {
                   rememberTemp.password = values.newPassword;
               }
               localStorage.setItem("remember",JSON.stringify(rememberTemp));
