@@ -213,15 +213,6 @@ export default {
       groupMsg.groups[0].userInfo = params;
       loginSuccess({loginInfo, groupMsg: groupMsg.groups[0]})
 
-      // yield put({
-      //   type: 'getProductList',
-      // })
-      // yield put({
-      //   type: 'getSellMachineList',
-      // })
-      // yield put({
-      //   type: 'getPayInfoList',
-      // })
     },
     //修改密码
     * changePassworld({payload,callback}, {call, put, select}) {

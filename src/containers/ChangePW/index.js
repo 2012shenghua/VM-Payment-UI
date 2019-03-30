@@ -33,12 +33,14 @@ let remember = {username:"",password:"",check:false};
             if(res && res.status) {
            const moda =  Modal.success({onOk:function () {
                //登录成功移除token修改登录密码
-               let rememberTemp = JSON.parse(localStorage.getItem("remember"))
-               rememberTemp.password = values.newPassword;
-               localStorage.setItem("remember",JSON.stringify(rememberTemp));
-               localStorage.removeItem("groupMsg");
-               localStorage.removeItem("loginInfo");
-               window.location.href = "/user/login"
+              let rememberTemp = JSON.parse(localStorage.getItem("remember"))
+              if (typeof rememberTemp === 'object') {
+                  rememberTemp.password = values.newPassword;
+              }
+              localStorage.setItem("remember",JSON.stringify(rememberTemp));
+              localStorage.removeItem("groupMsg");
+              localStorage.removeItem("loginInfo");
+              window.location.href = "/user/login"
 
              },okText:"确认",content:"修改成功，请重新登录"});
 
