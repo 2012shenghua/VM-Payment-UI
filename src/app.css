@@ -23,15 +23,15 @@
   position: relative;
 }
 
-:global {
-  (html, body) {
+
+  html body {
     height: 100%;
     color: '#ccc';
   }
   .ant-layout-has-sider{
     height: 100%;
-  }
+  } 
 
 
-}
+/* } */
 
