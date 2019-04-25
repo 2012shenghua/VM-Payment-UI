@@ -1,5 +1,6 @@
 {
   "private": true,
+  "homepage": ".",
   "scripts": {
     "start": "roadhog server",
     "build": "roadhog build"
