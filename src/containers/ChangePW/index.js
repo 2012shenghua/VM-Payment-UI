@@ -7,6 +7,7 @@ import style from "./index.css"
 import { connect } from 'dva';
 
 
+
 let param = {"grant_type": "password",username:"",password:""};
 let remember = {username:"",password:"",check:false};
 
@@ -21,6 +22,7 @@ let remember = {username:"",password:"",check:false};
     }
 
     e.preventDefault();
+    const athis = this;
     this.props.form.validateFields((err, values) => {
       // alert(JSON.stringify(values));return;
       delete values.confirmPassword;
@@ -40,7 +42,10 @@ let remember = {username:"",password:"",check:false};
               localStorage.setItem("remember",JSON.stringify(rememberTemp));
               localStorage.removeItem("groupMsg");
               localStorage.removeItem("loginInfo");
-              window.location.href = "/user/login"
+               athis.props.dispatch({
+                 type: 'main/redirectLogin'
+               });
+
 
              },okText:"确认",content:"修改成功，请重新登录"});
 
@@ -91,6 +96,7 @@ let remember = {username:"",password:"",check:false};
    }
 
   render() {
+
     const {getFieldDecorator} = this.props.form;
     return (
       <div className={APP.login} >

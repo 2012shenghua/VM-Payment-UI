@@ -25,13 +25,20 @@ class Main extends React.Component {
     });
   }
 
-  logout() {
+  logout =()=> {
     localStorage.removeItem("groupMsg");
     localStorage.removeItem("loginInfo");
-    window.location.href = "/user/login";
+   this.props.dispatch({
+      type: 'main/redirectLogin',
+    })
+
+
   }
-  changePW(){
-    window.location.href = "/user/changePassword";
+  changePW =()=>{
+
+    this.props.dispatch({
+      type: 'main/redirectChangePassword',
+    })
   }
 
   constructor() {
@@ -96,6 +103,15 @@ class Main extends React.Component {
   }
 }
 
-export default connect(({Main}) => ({
-  Main,
-}))(Main);
+// export default connect(({Main}) => ({
+//   Main,
+// }))(Main);
+
+
+function mapStateToProps(state) {
+  return {main: state.main};
+}
+
+// const com = Form.create({name: 'normal_login'})(Index);
+
+export default connect(mapStateToProps)(Main);

@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {Modal} from 'antd'
 import {appID,appKey} from "../mainUti";
+
 // import {CasServerUrl, JavaServerHost} from "../common/const/config";
 
 //携带cookie
@@ -26,12 +27,16 @@ axios.interceptors.response.use(config => {
       ),
       onOk() {
         if (err.response.data.errorCode ==='WRONG_TOKEN') {
-          window.location.href = "/user/login"
+          // window.location.href = "/user/login"
+          localStorage.removeItem("groupMsg");
+          localStorage.removeItem("loginInfo");
+          window.location.href = "/index.html"
+
         }
       },
     })
-  
-    
+
+
   }
   return Promise.reject('请求异常');
 });

@@ -7,6 +7,7 @@ import {
 import {Modal,message} from 'antd'
 import base64 from 'base-64'
 import moment from "moment"
+import { routerRedux } from 'dva/router';
 
 const login1 = async (params) => {
   return await new Promise((resolve, reject) => {
@@ -61,7 +62,9 @@ const headerSell = (loginInfo) => {
 function loginSuccess({loginInfo, groupMsg}) {
   localStorage.setItem("loginInfo", JSON.stringify(loginInfo));
   localStorage.setItem("groupMsg", JSON.stringify(groupMsg));
-  window.location.href = "/productInfo"
+
+  // routerRedux.push('/productInfo', {name: 'dkvirus'})
+
 }
 
 function getLoginInfo() {
@@ -108,8 +111,10 @@ export default {
             type: 'getStorage',
             payload: info
           });
-        } else if (window.location.pathname != "/user/login") {
-          window.location.href = "/user/login"
+        } else if (location.pathname != "/user/login") {
+          dispatch({
+            type: 'redirectLogin',
+          })
           return;
         }
         if (location.pathname === '/productInfo') {
@@ -174,6 +179,16 @@ export default {
   },
 
   effects: {
+    /*跳转login*/
+    * redirectLogin ({ payload }, { put }) {
+      yield put(routerRedux.push('/user/login', {name: 'dkvirus'}));
+    },
+    * redirectChangePassword ({ payload }, { put }) {
+      yield put(routerRedux.push('/user/changePassword', {name: 'dkvirus'}));
+    },
+    * redirectProductInfo ({ payload }, { put }) {
+      yield put(routerRedux.push('/productInfo', {name: 'dkvirus'}));
+    },
     // *login({ payload }, { call, put, select }) {  // eslint-disable-line
     //   const params = {
     //     "grant_type": "password",
@@ -212,6 +227,7 @@ export default {
       })
       groupMsg.groups[0].userInfo = params;
       loginSuccess({loginInfo, groupMsg: groupMsg.groups[0]})
+      yield put( routerRedux.push('/productInfo', {name: 'dkvirus'}));
 
     },
     //修改密码

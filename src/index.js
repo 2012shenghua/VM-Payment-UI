@@ -5,7 +5,8 @@ import createLoading from 'dva-loading';
 import main from './main'
 import mainModel from './models/main'
 import Route from './router'
-import {createBrowserHistory as createHistory} from "history"
+// import {createBrowserHistory as createHistory} from "history"
+import {createHashHistory as createHistory} from "history"
 // 1. Initialize
 const app = dva({history:createHistory(),onError: e => {console.error(e);}});
 app.use(createLoading({
